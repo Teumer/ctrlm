@@ -21,10 +21,7 @@ class Menu:
         user_input = input()
         logging.info(user_input)
 
-    def __str__(self):
-        return 'test'
-
-    def test(self):
+    def test_dict(self):
         version_dict = {
             1: "Control-M 9.0.19.200",
             2: "Control-M 9.0.19.100",
