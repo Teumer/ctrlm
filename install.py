@@ -1,4 +1,5 @@
 #!/usr/bin/python
+
 import logging
 import os
 import re
@@ -22,7 +23,7 @@ class Menu:
         logging.info(user_input)
 
     def __str__(self):
-        return ''
+        return 'test'
 
     def test(self):
         version_dict = {
