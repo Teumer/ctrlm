@@ -1,0 +1,12 @@
+[Unit]
+Description=Control-M Server
+After=systemd-user-sessions.service multi-user.target network.target
+
+[Service]
+ExecStart=/bin/sh -c /home/s1/ctm_server/data/rc.s1
+Type=forking
+RemainAfterExit=yes
+ExecStop=/usr/bin/su - s1 -c '/home/s1/ctm_server/scripts/shut_ctm -CA; /home/s1/ctm_server/scripts/shut_ca ; sleep 10 ; /home/s1/ctm_server/scripts/shutdb;'
+
+[Install]
+WantedBy=multi-user.target

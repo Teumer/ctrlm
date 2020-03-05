@@ -1,0 +1,13 @@
+[Unit]
+Description=Control-M/EM
+After=systemd-user-sessions.service multi-user.target network.target
+
+[Service]
+User=em1
+ExecStart=/bin/sudo -u em1 /bin/csh -c "start_server; start_config_agent"
+Type=forking
+RemainAfterExit=yes
+ExecStop=/bin/sudo -u em1 /bin/csh -c "/home/em1/bin/em ctl -mcs -C Config_Agent -M changeme -cmd shutdown"
+
+[Install]
+WantedBy=multi-user.target

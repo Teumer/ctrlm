@@ -1,0 +1,11 @@
+[Unit]
+Description=Control-M Agent
+
+[Service]
+Type=forking
+RemainAfterExit=yes
+ExecStart=/home/s1/ctm_agent/ctm/scripts/rc.agent_user start
+ExecStop=/home/s1/ctm_agent/ctm/scripts/rc.agent_user stop
+
+[Install]
+WantedBy=multi-user.target

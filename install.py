@@ -5,58 +5,82 @@ import re
 import subprocess
 import sys
 
-__author__ = "Joe_Teumer@bmc.com"
+__author__ = "joe_teumer@bmc.com"
 
-log_path = "/tmp/"
+# NFS share with Control-M installation files
+repo_host = "clm-aus-tvl3rt"
+repo_host_dir = "/nfs/repo"
+
+# Log directory and log filename
+file_path = "/tmp/"
 log_filename = "{}.log".format(os.path.basename(__file__))
 
+# Control-M installation information
+user_em = 'em1'
+user_srv = 's1'
+# Password for the above linux accounts
+# note Control-M EM & Server silent installation files have hardcoded password 'empass'
+password = 'empass'
+user_list = [user_em, user_srv]
+path = os.path.dirname(os.path.abspath(__file__)) + "/files/"
+service_directory = "/etc/systemd/system/"
+service_ctm_enterprise_manager = service_directory + "ctm_enterprise_manager.service"
+service_ctm_server = service_directory + "ctm_server.service"
+service_ctm_agent = service_directory + "ctm_agent.service"
+service_list = service_ctm_enterprise_manager, service_ctm_server, service_ctm_agent
 
-class Menu:
+version_dict = {
+    1: {"version": "9.0.19.200", "filename": "DROST.9.0.19.200_Linux-x86_64.tar.Z"},
+    2: {"version": "9.0.19.100", "filename": "DROST.9.0.19.100_Linux-x86_64.tar.Z"},
+    3: {"version": "9.0.19.000", "filename": "DROST.9.0.19.000_Linux-x86_64.tar.Z"}
+}
+
+
+class InstallationMenu:
 
     def __init__(self):
-        self.version = 'none'
-        os.system('clear')
-        sys.stdout.write(self.menu())
-        sys.stdout.flush()
-        user_input = input()
-        logging.info(user_input)
+        self.version = self.run()
+        logging.info("Installation version: {}".format(self.version))
 
-    def test_dict(self):
-        version_dict = {
-            1: "Control-M 9.0.19.200",
-            2: "Control-M 9.0.19.100",
-            3: "Control-M 9.0.19.000"
-        }
-        return version_dict
+    def run(self):
+        while True:
+            value = 0
+            try:
+                # Draw Menu
+                os.system('clear')
+                sys.stdout.write(self.menu())
+                sys.stdout.flush()
+                # Get user input
+                value = int(raw_input(""))
+                if value == 0:
+                    sys.exit(0)
+                # Check if user input is valid
+                elif value not in version_dict.keys():
+                    continue
+            except ValueError:
+                continue
+            except KeyboardInterrupt:
+                # User ctrl c'd
+                sys.exit(1)
+            else:
+                break
+        return value
 
-    def error(self):
-        string = "This option is invalid\n" \
-                 "\n" \
-                 "Press Enter to continue"
-        return string
-
-    def menu(self):
-        ostring = "\nCONTROL-M Installation Menu\n" \
-                 "{}\n" \
-                 "\nSelect one of the following menus:\n" \
-                 "\n" \
-                 "1 - Control-M 9.0.19.200\n" \
-                 "2 - Control-M 9.0.19.100\n" \
-                 "\n" \
-                 "q - Quit\n" \
-                 "\n" \
-                 " Enter option number --->   []:".format("-" * 29)
-
+    @staticmethod
+    def menu():
+        versions = ""
+        for key in version_dict:
+            versions += "{key} - {version}\n".format(key=key, version=version_dict[key]['version'])
         string = "\nCONTROL-M Installation Menu\n" \
-                  "{}\n" \
-                  "\nSelect one of the following menus:\n" \
-                  "\n" \
-                  "1 - Control-M 9.0.19.200\n" \
-                  "2 - Control-M 9.0.19.100\n" \
-                  "\n" \
-                  "q - Quit\n" \
-                  "\n" \
-                  " Enter option number --->   []:".format("-" * 29)
+                 "{line}\n" \
+                 "\nSelect one of the following versions:\n" \
+                 "\n" \
+                 "{versions}" \
+                 "\n" \
+                 "0 - Quit\n" \
+                 "\n" \
+                 " Enter option number --->   []:".format(line="-" * 29,
+                                                          versions=versions)
         return string
 
 
@@ -83,28 +107,6 @@ class CustomFormatter(logging.Formatter):
         log_fmt = self.FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)
-
-
-class ControlM:
-    """ todo move to configparser format """
-
-    def __init__(self):
-        self.user_em = 'em1'
-        self.user_srv = 's1'
-        self.password = 'empass'
-        self.user_list = [self.user_em, self.user_srv]
-        self.service_directory = "/etc/systemd/system/"
-        self.service_ctm_enterprise_manager = self.service_directory + "ctm_enterprise_manager.service"
-        self.service_ctm_server = self.service_directory + "ctm_server.service"
-        self.service_ctm_agent = self.service_directory + "ctm_agent.service"
-        self.service_list = self.service_ctm_enterprise_manager, self.service_ctm_server, self.service_ctm_agent
-
-
-class InstallationPackage:
-    """ todo move to configparser format """
-
-    def __init__(self):
-        self.drost = "DROST.9.0.19.200_Linux-x86_64.tar.Z"
 
 
 class Command:
@@ -146,39 +148,37 @@ class Command:
 
 def set_add_user():
     # Add user and specify shell
-    for user in ControlM().user_list:
+    for user in user_list:
         cmd = "adduser {} -s /bin/csh".format(user)
         Command(cmd)
 
 
 def set_user_password():
     # Set user password
-    password = ControlM().password
-    for user in ControlM().user_list:
+    for user in user_list:
         cmd = "echo {}:{} | chpasswd".format(user, password)
         Command(cmd)
 
 
 def set_user_group_wheel():
     # Add user to wheel group
-    for user in ControlM().user_list:
+    for user in user_list:
         cmd = "usermod -aG wheel {}".format(user)
         Command(cmd)
 
 
 def set_auto_script_cleanup():
     # Remove already existing services if any
-    for service in ControlM().service_list:
+    for service in service_list:
         if os.path.exists(service):
             logging.info("Removing {}".format(service))
             os.remove(service)
 
 
 def set_auto_script_write():
-    #
-    for service in ControlM().service_list:
+    for service in service_list:
         logging.info("Writing {}".format(service))
-        with open("/tmp/files/{}".format(service.split('/')[-1], 'r')) as f:
+        with open("{}{}".format(path, service.split('/')[-1], 'r')) as f:
             data = f.read()
         with open(service, 'w') as f:
             for line in data:
@@ -186,7 +186,7 @@ def set_auto_script_write():
 
 
 def set_auto_script_permissions():
-    for service in ControlM().service_list:
+    for service in service_list:
         cmd = "chmod 644 {}".format(service)
         Command(cmd)
 
@@ -197,46 +197,51 @@ def set_auto_script_reload():
 
 
 def set_auto_script_enable():
-    for service in ControlM().service_list:
+    for service in service_list:
         cmd = "systemctl enable {}".format(service)
         Command(cmd)
 
 
 def set_enterprise_manager_service():
     em_service_file = "ctm_enterprise_manager.service"
-    Command("cd /tmp/files && sed -i 's/changeme/{hostname}/g' {a_file}".format(hostname=Command('hostname'),
-                                                                                a_file=em_service_file))
+    Command("cd {path} && sed -i 's/changeme/{hostname}/g' {a_file}".format(path=path,
+                                                                            hostname=Command('hostname'),
+                                                                            a_file=em_service_file))
 
 
-def mount_nfs_share():
+def repo_mount():
     # Unmount /mnt if mounted
     Command("if grep -qs '/mnt ' /proc/mounts; then umount /mnt; fi")
     # Mount remote repository
-    Command("mount clm-aus-tvl3rt:/nfs/repo /mnt/")
+    Command("mount {}:{} /mnt/".format(repo_host, repo_host_dir))
 
 
-def copy_repo_tmp():
+def repo_copy():
     # Copy remote pack to local
-    Command("rsync -avP /mnt/9.0.19.200/* /tmp")
+    Command("rsync -avP /mnt/{}/* {}".format(version_dict[version]['version'], file_path))
 
 
-def extract_repo_tmp():
+def repo_extract():
     # Make extract directory
-    Command("mkdir /tmp/extract")
+    Command("mkdir {}".format(version_dir))
     # Untar package to extract directory
-    Command("tar xzf /tmp/DROST.9.0.19.200_Linux-x86_64.tar.Z -C /tmp/extract")
+    Command("tar xzf {}{} -C {}".format(file_path, version_dict[version]['filename'], version_dir))
 
 
 def install_ctm_enterprise_manager():
     # Install Control-M/Enterprise Manager
-    Command("cd /home/em1 && sudo -u em1 /tmp/extract/setup.sh -silent "
-            "/tmp/files/ctm_enterprise_manager_silent_install.xml", realtime=True)
+    Command("cd /home/em1 && sudo -u em1 {}/setup.sh -silent {}ctm_enterprise_manager_silent_install.xml".format(
+        version_dir,
+        path
+    ), realtime=True)
 
 
 def install_ctm_server():
     # Install Control-M/Server
-    Command("cd /home/s1 && sudo -u s1 /tmp/extract/setup.sh -silent "
-            "/tmp/files/ctm_server_silent_install.xml", realtime=True)
+    Command("cd /home/s1 && sudo -u s1 {}/setup.sh -silent {}ctm_server_silent_install.xml".format(
+        version_dir,
+        path
+    ), realtime=True)
 
 
 def api_get_port():
@@ -262,7 +267,7 @@ def api_add_environment():
                                                                                         hostname=Command("hostname"),
                                                                                         port=api_get_port(),
                                                                                         user="emuser",
-                                                                                        password=ControlM().password))
+                                                                                        password=password))
 
 
 def api_login():
@@ -294,7 +299,7 @@ if __name__ == '__main__':
     console_handler.setFormatter(CustomFormatter())
 
     # Create file handler
-    file_handler = logging.FileHandler(log_path + log_filename)
+    file_handler = logging.FileHandler(file_path + log_filename)
     file_handler_format = logging.Formatter(
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)")
     file_handler.setFormatter(file_handler_format)
@@ -304,12 +309,9 @@ if __name__ == '__main__':
     root_logger.addHandler(file_handler)
 
     # Initialize installation menu
-    menu = Menu()
+    menu = InstallationMenu()
     version = menu.version
-
-    logging.info(version)
-
-    sys.exit(1)
+    version_dir = file_path + version_dict[version]['version']
 
     # Housekeeping
     set_add_user()
@@ -323,9 +325,9 @@ if __name__ == '__main__':
     set_auto_script_enable()
 
     # Download package to mount
-    mount_nfs_share()
-    copy_repo_tmp()
-    extract_repo_tmp()
+    repo_mount()
+    repo_copy()
+    repo_extract()
 
     # CTM installation
     install_ctm_enterprise_manager()
