@@ -125,9 +125,10 @@ class CustomFormatter(logging.Formatter):
 class Command:
     """ run shell command and handle logging and return code """
 
-    def __init__(self, command, realtime=False):
+    def __init__(self, command, realtime=False, critical=False):
         self.command = command
         self.realtime = realtime
+        self.critical = critical
 
         if self.realtime:
             self.data = self.run_command_realtime(self.command)
@@ -144,6 +145,8 @@ class Command:
     def logger(self):
         if self.exit_code != 0:
             logging.warning(" \\___{} exit code {}".format(self, self.exit_code))
+            if self.critical:
+                sys.exit(self.exit_code)
 
     def run_command_realtime(self, cmd):
         logging.info(self.command)
@@ -253,7 +256,7 @@ def install_ctm_enterprise_manager():
         version_dir,
         file_path,
         install_enterprise_manager_file
-    ), realtime=True)
+    ), realtime=True, critical=True)
 
 
 def install_ctm_server():
@@ -262,7 +265,7 @@ def install_ctm_server():
         version_dir,
         file_path,
         install_server_file
-    ), realtime=True)
+    ), realtime=True, critical=True)
 
 
 def install_forecast():
