@@ -396,7 +396,7 @@ if __name__ == '__main__':
     # Download package to mount
     repo_mount()
     repo_copy()
-    # repo_extract()
+    repo_extract()
 
     # CTM installation
     install_copy()
