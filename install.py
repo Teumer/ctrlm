@@ -45,7 +45,7 @@ install_bim_file = "DRCBM_Linux-x86_64.tar.Z"
 version_dict = {
     1: {"version": "9.0.19.200", "filename": "DROST.9.0.19.200_Linux-x86_64.tar.Z"},
     2: {"version": "9.0.19.100", "filename": "DROST.9.0.19.100_Linux-x86_64.tar.Z"},
-    3: {"version": "9.0.19.000", "filename": "DROST.9.0.19.000_Linux-x86_64.tar.Z"}
+    3: {"version": "9.0.19.000", "filename": "DROST.9.0.19.00_Linux-x86_64.tar.Z"}
 }
 
 
