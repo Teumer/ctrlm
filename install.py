@@ -225,6 +225,18 @@ def set_enterprise_manager_service():
                                                                             a_file=em_service_file))
 
 
+def set_enterprise_manager_install():
+    Command("cd {} && sed -i 's/changeme/{}/g' {}".format(path,
+                                                          version_dict[version]['version'],
+                                                          install_enterprise_manager_file))
+
+
+def set_server_install():
+    Command("cd {} && sed -i 's/changeme/{}/g' {}".format(path,
+                                                          version_dict[version]['version'],
+                                                          install_server_file))
+
+
 def repo_mount():
     # Unmount /mnt if mounted
     Command("if grep -qs '/mnt ' /proc/mounts; then umount /mnt; fi")
@@ -390,6 +402,8 @@ if __name__ == '__main__':
     set_user_password()
     set_user_group_wheel()
     set_enterprise_manager_service()
+    set_enterprise_manager_install()
+    set_server_install()
     set_auto_script_cleanup()
     set_auto_script_write()
     set_auto_script_permissions()

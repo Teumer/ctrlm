@@ -1,5 +1,5 @@
 <AutomatedInstallation langpack="eng">
-    <target.product>Control-M/Enterprise Manager 9.0.19.200</target.product>
+    <target.product>Control-M/Enterprise Manager changeme</target.product>
     <default.pg.dedicated>
         <entry key="field.Database.Size" value="Medium"/>
         <entry key="field.Database.Owner.Password" value="!!!eUYsg3ad1gI="/>
