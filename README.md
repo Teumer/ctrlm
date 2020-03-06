@@ -55,3 +55,11 @@ Select one of the following versions:
 
 ## Output
 Quickly ready a new test environment for troubleshooting.
+
+Control-M/Enterprise Manager Client login: 
+```emuser / empass```
+
+Control-M/Enterprise Manager Unix Account: ```em1 / empass```
+
+Control-M/Server Unix Account: ```s1 / empass```
+
