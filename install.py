@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import json
 import logging
 import os
 import re
@@ -16,6 +17,7 @@ file_path = "/tmp/"
 log_filename = "{}.log".format(os.path.basename(__file__))
 
 # Control-M installation information
+# Variables not able to be customized
 user_em = 'em1'
 user_srv = 's1'
 # Password for the above linux accounts
@@ -23,12 +25,23 @@ user_srv = 's1'
 password = 'empass'
 user_list = [user_em, user_srv]
 path = os.path.dirname(os.path.abspath(__file__)) + "/files/"
+# Services
 service_directory = "/etc/systemd/system/"
 service_ctm_enterprise_manager = service_directory + "ctm_enterprise_manager.service"
 service_ctm_server = service_directory + "ctm_server.service"
 service_ctm_agent = service_directory + "ctm_agent.service"
 service_list = service_ctm_enterprise_manager, service_ctm_server, service_ctm_agent
+# Silent installation files
+install_enterprise_manager_file = "ctm_enterprise_manager_silent_install.xml"
+install_server_file = "ctm_server_silent_install.xml"
+# Forecast
+install_forecast_silent_file = "ctm_forecast_silent_install.xml"
+install_forecast_file = "DRFOR_Linux-x86_64.tar.Z*"
+# Batch Impact Manager
+install_bim_silent_file = "ctm_bim_silent_install.xml"
+install_bim_file = "DRCBM_Linux-x86_64.tar.Z"
 
+# Control-M/Enterprise Manager and Control-M/Server version
 version_dict = {
     1: {"version": "9.0.19.200", "filename": "DROST.9.0.19.200_Linux-x86_64.tar.Z"},
     2: {"version": "9.0.19.100", "filename": "DROST.9.0.19.100_Linux-x86_64.tar.Z"},
@@ -221,27 +234,66 @@ def repo_copy():
     Command("rsync -avP /mnt/{}/* {}".format(version_dict[version]['version'], file_path))
 
 
+def install_copy():
+    # Copy ctm installation files to working directory
+    Command("rsync -avP {}/*.xml {}".format(path, file_path))
+
+
 def repo_extract():
     # Make extract directory
-    Command("mkdir {}".format(version_dir))
+    if not os.path.exists(version_dir):
+        os.makedirs(version_dir)
     # Untar package to extract directory
     Command("tar xzf {}{} -C {}".format(file_path, version_dict[version]['filename'], version_dir))
 
 
 def install_ctm_enterprise_manager():
     # Install Control-M/Enterprise Manager
-    Command("cd /home/em1 && sudo -u em1 {}/setup.sh -silent {}ctm_enterprise_manager_silent_install.xml".format(
+    Command("cd /home/em1 && sudo -u em1 {}/setup.sh -silent {}{}".format(
         version_dir,
-        path
+        file_path,
+        install_enterprise_manager_file
     ), realtime=True)
 
 
 def install_ctm_server():
     # Install Control-M/Server
-    Command("cd /home/s1 && sudo -u s1 {}/setup.sh -silent {}ctm_server_silent_install.xml".format(
+    Command("cd /home/s1 && sudo -u s1 {}/setup.sh -silent {}{}".format(
         version_dir,
-        path
+        file_path,
+        install_server_file
     ), realtime=True)
+
+
+def install_forecast():
+    # Install forecast
+    f_path = file_path + 'forecast/'
+    if not os.path.exists(f_path):
+        os.makedirs(f_path)
+    Command("tar xzf {}{} -C {}".format(file_path, install_forecast_file, f_path))
+    Command("su - em1 -c \"{}setup.sh -silent {}{}\"".format(
+        f_path,
+        file_path,
+        install_forecast_silent_file
+    ), realtime=True)
+
+
+def install_bim():
+    # Install bim
+    f_path = file_path + 'bim/'
+    if not os.path.exists(f_path):
+        os.makedirs(f_path)
+    Command("tar xzf {}{} -C {}".format(file_path, install_bim_file, f_path))
+    Command("su - em1 -c \"{}setup.sh -silent {}{}\"".format(
+        f_path,
+        file_path,
+        install_bim_silent_file
+    ), realtime=True)
+
+
+def start_agent_process():
+    # Start the Control-M/Agent process
+    Command("su - s1 -c \"start-ag -u s1 -p ALL -s\"")
 
 
 def api_get_port():
@@ -260,7 +312,7 @@ def api_get_port():
 
 def api_add_environment():
     """
-    test
+    Add dev environment
     """
     Command("su - em1 -c \"ctm environment add devEnvironment "
             "\"https://{hostname}:{port}/automation-api\" \"{user}\" \"{password}\"\"".format(
@@ -273,6 +325,22 @@ def api_add_environment():
 def api_login():
     # Login to the API dev environment via an API call
     Command("su - em1 -c \"ctm session login\"")
+
+
+def api_server_already_added():
+    """
+    Check if Control-M/Server already added to Control-M/Enterprise Manager
+    Return True if server present
+    Return False if not present
+    """
+    try:
+        data = json.loads(Command("su - em1 -c \"ctm config servers::get\"").stdout)
+        if not any(key.get('name', None) == 'Server1' for key in data):
+            return False
+        else:
+            return True
+    except ValueError:
+        return False
 
 
 def api_add_server():
@@ -311,6 +379,7 @@ if __name__ == '__main__':
     # Initialize installation menu
     menu = InstallationMenu()
     version = menu.version
+    # Example /tmp/9.0.19.200
     version_dir = file_path + version_dict[version]['version']
 
     # Housekeeping
@@ -327,13 +396,23 @@ if __name__ == '__main__':
     # Download package to mount
     repo_mount()
     repo_copy()
-    repo_extract()
+    # repo_extract()
 
     # CTM installation
+    install_copy()
     install_ctm_enterprise_manager()
     install_ctm_server()
 
     # API
     api_add_environment()
     api_login()
-    api_add_server()
+    # Add server
+    if not api_server_already_added():
+        api_add_server()
+
+    # Start Control-M/Agent
+    start_agent_process()
+
+    # Install add ons
+    install_forecast()
+    install_bim()
