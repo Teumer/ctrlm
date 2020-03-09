@@ -29,13 +29,8 @@ cd ctrlm
 ```
 
 ```
-# Allow user to execute
-chmod u+x install.py
-```
-
-```
 # Execute script
-./install.py
+python install.py
 ```
 
 ```
