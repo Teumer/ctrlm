@@ -8,6 +8,16 @@ import sys
 
 __author__ = "joe_teumer@bmc.com"
 
+"""
+Wish List
+- add support for AFT/MFT
+- add order test job via API call
+- add support to modify user account names
+- add support to change install password
+- add support for 9.0.18.xxx version(s)
+- add support for 9.0.20.xxx version(s) when available
+"""
+
 # NFS share with Control-M installation files
 repo_host = "clm-aus-tvl3rt"
 repo_host_dir = "/nfs/repo"
@@ -18,28 +28,50 @@ log_filename = "{}.log".format(os.path.basename(__file__))
 
 # Control-M installation information
 # Variables not able to be customized
+
+# Linux user accounts
 user_em = 'em1'
 user_srv = 's1'
+user_list = [user_em, user_srv]
+
 # Password for the above linux accounts
 # note Control-M EM & Server silent installation files have hardcoded password 'empass'
 password = 'empass'
-user_list = [user_em, user_srv]
+
+# Version controlled files directory
 path = os.path.dirname(os.path.abspath(__file__)) + "/files/"
+
 # Services
 service_directory = "/etc/systemd/system/"
 service_ctm_enterprise_manager = service_directory + "ctm_enterprise_manager.service"
 service_ctm_server = service_directory + "ctm_server.service"
 service_ctm_agent = service_directory + "ctm_agent.service"
 service_list = service_ctm_enterprise_manager, service_ctm_server, service_ctm_agent
+
 # Silent installation files
 install_enterprise_manager_file = "ctm_enterprise_manager_silent_install.xml"
 install_server_file = "ctm_server_silent_install.xml"
+
 # Forecast
 install_forecast_silent_file = "ctm_forecast_silent_install.xml"
 install_forecast_file = "DRFOR_Linux-x86_64.tar.Z*"
+
 # Batch Impact Manager
 install_bim_silent_file = "ctm_bim_silent_install.xml"
 install_bim_file = "DRCBM_Linux-x86_64.tar.Z"
+
+# Self Service
+install_self_service_silent_file = "ctm_sls_silent_install.xml"
+install_self_service_file = "DRCAG_Linux-x86_64.tar.Z*"
+
+# Workload Change Manager
+install_workload_change_manager_silent_file = "ctm_wcm_silent_install.xml"
+install_workload_change_manager_file = "DRWCM_Linux-x86_64.tar.Z"
+
+# Web Services Java, and Messaging
+install_wjm_em_silent_file = "ctm_wjm_em_silent_install.xml"
+install_wjm_agent_silent_file = "ctm_wjm_agent_silent_install.xml"
+install_wjm_file = "DRCOB.9.0.00_Linux-x86_64.z"
 
 # Control-M/Enterprise Manager and Control-M/Server version
 version_dict = {
@@ -144,7 +176,7 @@ class Command:
 
     def logger(self):
         if self.exit_code != 0:
-            logging.warning(" \\___{} exit code {}".format(self, self.exit_code))
+            logging.warning(" \\___{} exit code {}".format(self.__str__(), self.exit_code))
             if self.critical:
                 sys.exit(self.exit_code)
 
@@ -152,7 +184,8 @@ class Command:
         logging.info(self.command)
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         for line in iter(p.stdout.readline, b''):
-            print(line.rstrip())
+            # sys.stdout.write(line.rstrip())
+            sys.stdout.write(line)
             sys.stdout.flush()
         return p.communicate()[0].strip().rstrip(), p.returncode
 
@@ -160,6 +193,36 @@ class Command:
         logging.info(self.command)
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         return p.communicate()[0].strip().rstrip(), p.returncode
+
+
+def set_cshrc_profile():
+    # Who the hell thought remapping backspace was a good idea in the Control-M install?
+    # Fix the current logged in user env
+    Command("stty erase '^?'")
+    # Comment out line: stty erase '^H' intr '^C' >& /dev/null
+    for user in user_list:
+        profile_file = "/home/{}/.cshrc".format(user)
+        if os.path.isfile(profile_file):
+            Command("sed -i 's/^stty erase/# stty erase/' {}".format(profile_file))
+
+
+def set_shell_alias():
+    # Define ls alias for root in .bashrc
+    root_file = "/root/.bashrc"
+    if os.path.isfile(root_file):
+        with open(root_file, 'r+') as f:
+            if not re.search(r"alias ls", f.read()):
+                logging.info("Writing {}".format(root_file))
+                f.write("alias ls=\"ls -lhF --color\"")
+
+    # Define ls alias for users in .cshrc
+    for user in user_list:
+        user_file = "/home/{}/.cshrc".format(user)
+        if os.path.isfile(user_file):
+            with open(user_file, 'r+') as f:
+                if not re.search(r"alias ls", f.read()):
+                    logging.info("Writing {}".format(user_file))
+                    f.write("alias ls ls -lhF --color")
 
 
 def set_add_user():
@@ -218,23 +281,31 @@ def set_auto_script_enable():
         Command(cmd)
 
 
+def install_copy():
+    # Copy ctm installation files to working directory
+    Command("rsync -avP {}* {}".format(path, file_path))
+
+
 def set_enterprise_manager_service():
+    # Update service file with hostname
     em_service_file = "ctm_enterprise_manager.service"
-    Command("cd {path} && sed -i 's/changeme/{hostname}/g' {a_file}".format(path=path,
-                                                                            hostname=Command('hostname'),
-                                                                            a_file=em_service_file))
+    Command("sed -i 's/changeme/{hostname}/' {path}{file}".format(path=file_path,
+                                                                  hostname=hostname,
+                                                                  file=em_service_file))
 
 
 def set_enterprise_manager_install():
-    Command("cd {} && sed -i 's/changeme/{}/g' {}".format(path,
-                                                          version_dict[version]['version'],
-                                                          install_enterprise_manager_file))
+    # Update installation file with version
+    Command("sed -i 's/changeme/{version}/' {path}{file}".format(path=file_path,
+                                                                 version=version_dict[version]['version'],
+                                                                 file=install_enterprise_manager_file))
 
 
 def set_server_install():
-    Command("cd {} && sed -i 's/changeme/{}/g' {}".format(path,
-                                                          version_dict[version]['version'],
-                                                          install_server_file))
+    # Update installation file with version
+    Command("sed -i 's/changeme/{version}/' {path}{file}".format(path=file_path,
+                                                                 version=version_dict[version]['version'],
+                                                                 file=install_server_file))
 
 
 def repo_mount():
@@ -249,11 +320,6 @@ def repo_copy():
     Command("rsync -avP /mnt/{}/* {}".format(version_dict[version]['version'], file_path))
 
 
-def install_copy():
-    # Copy ctm installation files to working directory
-    Command("rsync -avP {}/*.xml {}".format(path, file_path))
-
-
 def repo_extract():
     # Make extract directory
     if not os.path.exists(version_dir):
@@ -264,20 +330,20 @@ def repo_extract():
 
 def install_ctm_enterprise_manager():
     # Install Control-M/Enterprise Manager
-    Command("cd /home/em1 && sudo -u em1 {}/setup.sh -silent {}{}".format(
+    Command("su - em1 -c \"{}/setup.sh -silent {}{}\"".format(
         version_dir,
         file_path,
         install_enterprise_manager_file
-    ), realtime=True, critical=True)
+    ), realtime=True, critical=False)
 
 
 def install_ctm_server():
     # Install Control-M/Server
-    Command("cd /home/s1 && sudo -u s1 {}/setup.sh -silent {}{}".format(
+    Command("su - s1 -c \"{}/setup.sh -silent {}{}\"".format(
         version_dir,
         file_path,
         install_server_file
-    ), realtime=True, critical=True)
+    ), realtime=True, critical=False)
 
 
 def install_forecast():
@@ -306,6 +372,58 @@ def install_bim():
     ), realtime=True)
 
 
+def install_workload_change_manager():
+    # Install workload change manager
+    f_path = file_path + 'workload_change_manager/'
+    if not os.path.exists(f_path):
+        os.makedirs(f_path)
+    Command("tar xzf {}{} -C {}".format(file_path, install_workload_change_manager_file, f_path))
+    Command("su - em1 -c \"{}setup.sh -silent {}{}\"".format(
+        f_path,
+        file_path,
+        install_workload_change_manager_silent_file
+    ), realtime=True)
+
+
+def install_self_service():
+    # Install self service
+    f_path = file_path + 'self_service/'
+    if not os.path.exists(f_path):
+        os.makedirs(f_path)
+    Command("tar xzf {}{} -C {}".format(file_path, install_self_service_file, f_path))
+    Command("su - em1 -c \"{}setup.sh -silent {}{}\"".format(
+        f_path,
+        file_path,
+        install_self_service_silent_file
+    ), realtime=True)
+
+
+def install_wjm_enterprise_manager():
+    # Install WJM
+    f_path = file_path + 'wjm/'
+    if not os.path.exists(f_path):
+        os.makedirs(f_path)
+    Command("tar xzf {}{} -C {}".format(file_path, install_wjm_file, f_path))
+    Command("su - em1 -c \"{}EM/setup.sh -silent {}{}\"".format(
+        f_path,
+        file_path,
+        install_wjm_em_silent_file
+    ), realtime=True)
+
+
+def install_wjm_agent():
+    # Install WJM
+    f_path = file_path + 'wjm/'
+    if not os.path.exists(f_path):
+        os.makedirs(f_path)
+    # Command("tar xzf {}{} -C {}".format(file_path, install_wjm_file, f_path))
+    Command("su - s1 -c \"{}Setup_files/components/cm/cmbpi/setup.sh -silent {}{}\"".format(
+        f_path,
+        file_path,
+        install_wjm_agent_silent_file
+    ), realtime=True)
+
+
 def start_agent_process():
     # Start the Control-M/Agent process
     Command("su - s1 -c \"start-ag -u s1 -p ALL -s\"")
@@ -326,15 +444,18 @@ def api_get_port():
 
 
 def api_add_environment():
-    """
-    Add dev environment
-    """
-    Command("su - em1 -c \"ctm environment add devEnvironment "
-            "\"https://{hostname}:{port}/automation-api\" \"{user}\" \"{password}\"\"".format(
-                                                                                        hostname=Command("hostname"),
-                                                                                        port=api_get_port(),
-                                                                                        user="emuser",
-                                                                                        password=password))
+    # Add API environment
+    environment_name = 'devEnvironment'
+    # Check if environment name already exists
+    if not re.search(r"{}".format(environment_name), Command("su - em1 -c \"ctm environment show\"").stdout):
+        Command("su - em1 -c \"ctm environment add {env} "
+                "\"https://{hostname}:{port}/automation-api\" "
+                "\"{user}\" "
+                "\"{password}\"\"".format(env=environment_name,
+                                          hostname=hostname,
+                                          port=api_get_port(),
+                                          user="emuser",
+                                          password=password))
 
 
 def api_login():
@@ -365,7 +486,7 @@ def api_add_server():
     ctm  - Control-M/Server name
     id   - Defines a unique 3-character code to identify the Control-M/Server
     """
-    Command("su - em1 -c \"ctm config server::add {host} {ctm} {id}\"".format(host=Command("hostname"),
+    Command("su - em1 -c \"ctm config server::add {host} {ctm} {id}\"".format(host=hostname,
                                                                               ctm="Server1",
                                                                               id="001"))
 
@@ -387,6 +508,13 @@ if __name__ == '__main__':
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)")
     file_handler.setFormatter(file_handler_format)
 
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser()
+    parser.add_argument("-s", "--skip-install", action='store_true',
+                        help="dev testing only - skip Control-M installation")
+    args = parser.parse_args()
+
     # Add handles to logger
     root_logger.addHandler(console_handler)
     root_logger.addHandler(file_handler)
@@ -397,10 +525,14 @@ if __name__ == '__main__':
     # Example /tmp/9.0.19.200
     version_dir = file_path + version_dict[version]['version']
 
+    # Get hostname
+    hostname = Command('hostname').stdout
+
     # Housekeeping
     set_add_user()
     set_user_password()
     set_user_group_wheel()
+    install_copy()
     set_enterprise_manager_service()
     set_enterprise_manager_install()
     set_server_install()
@@ -416,9 +548,15 @@ if __name__ == '__main__':
     repo_extract()
 
     # CTM installation
-    install_copy()
-    install_ctm_enterprise_manager()
-    install_ctm_server()
+    if not args.skip_install:
+        install_ctm_enterprise_manager()
+        install_ctm_server()
+        install_forecast()
+        install_bim()
+        install_self_service()
+        install_workload_change_manager()
+        install_wjm_enterprise_manager()
+        install_wjm_agent()
 
     # API
     api_add_environment()
@@ -430,8 +568,8 @@ if __name__ == '__main__':
     # Start Control-M/Agent
     start_agent_process()
 
-    # Install add ons
-    install_forecast()
-    install_bim()
+    # CSH Profile Fix
+    set_cshrc_profile()
+    set_shell_alias()
 
     logging.info("Control-M v{} installed successfully".format(version_dict[version]['version']))

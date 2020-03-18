@@ -2,12 +2,15 @@
 
 ## Purpose
 
-Automated deployment of the following Control-M components:
+Automated download and deployment of the following Control-M components:
 1. Control-M/Enterprise Manager
 2. Control-M/Server
 3. Control-M/Agent
 4. Control-M/Batch Impact Manager
 5. Control-M/Forecast
+6. Control-M/Self Service
+7. Control-M/Workload Change Manager
+8. Control-M/Web Services, Java, and Messaging
 
 
 ## Input / Requirements
