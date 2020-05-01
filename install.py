@@ -75,9 +75,10 @@ install_wjm_file = "DRCOB.9.0.00_Linux-x86_64.z"
 
 # Control-M/Enterprise Manager and Control-M/Server version
 version_dict = {
-    1: {"version": "9.0.19.200", "filename": "DROST.9.0.19.200_Linux-x86_64.tar.Z"},
-    2: {"version": "9.0.19.100", "filename": "DROST.9.0.19.100_Linux-x86_64.tar.Z"},
-    3: {"version": "9.0.19.000", "filename": "DROST.9.0.19.000_Linux-x86_64.z"}
+    1: {"version": "9.0.20.000", "filename": "DROST.9.0.20.000_Linux-x86_64.tar.Z"},
+    2: {"version": "9.0.19.200", "filename": "DROST.9.0.19.200_Linux-x86_64.tar.Z"},
+    3: {"version": "9.0.19.100", "filename": "DROST.9.0.19.100_Linux-x86_64.tar.Z"},
+    4: {"version": "9.0.19.000", "filename": "DROST.9.0.19.000_Linux-x86_64.z"}
 }
 
 
@@ -299,6 +300,22 @@ def set_enterprise_manager_install():
     Command("sed -i 's/changeme/{version}/' {path}{file}".format(path=file_path,
                                                                  version=version_dict[version]['version'],
                                                                  file=install_enterprise_manager_file))
+
+
+def set_password_install():
+    # Update installation file with password
+    # Password 'empass'
+    # 9.0.20.000 has a different password encryption
+    if version == 1:
+        install_password = "!!!iQCq44Zczw9356oE6g3Y5Q=="
+    else:
+        install_password = "!!!eUYsg3ad1gI="
+    Command("sed -i 's/changepassword/{password}/' {path}{file}".format(path=file_path,
+                                                                        password=install_password,
+                                                                        file=install_enterprise_manager_file))
+    Command("sed -i 's/changepassword/{password}/' {path}{file}".format(path=file_path,
+                                                                        password=install_password,
+                                                                        file=install_server_file))
 
 
 def set_server_install():
@@ -536,6 +553,7 @@ if __name__ == '__main__':
     set_enterprise_manager_service()
     set_enterprise_manager_install()
     set_server_install()
+    set_password_install()
     set_auto_script_cleanup()
     set_auto_script_write()
     set_auto_script_permissions()

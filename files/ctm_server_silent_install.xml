@@ -2,8 +2,8 @@
     <target.product>Control-M/Server changeme</target.product>
     <default.pg.dedicated>
         <entry key="field.Database.Size" value="Medium"/>
-        <entry key="field.Database.Owner.Password" value="!!!eUYsg3ad1gI="/>
-        <entry key="field.Database.Administrator.Password" value="!!!eUYsg3ad1gI="/>
+        <entry key="field.Database.Owner.Password" value="changepassword"/>
+        <entry key="field.Database.Administrator.Password" value="changepassword"/>
     </default.pg.dedicated>
     <default.custom>
         <entry key="use.alternative.JRE" value="false"/>
