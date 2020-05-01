@@ -42,13 +42,23 @@ CONTROL-M Installation Menu
 
 Select one of the following versions:
 
-1 - 9.0.19.200
-2 - 9.0.19.100
-3 - 9.0.19.000
+1 - 9.0.20.000
+2 - 9.0.19.200
+3 - 9.0.19.100
+4 - 9.0.19.000
 
 0 - Quit
 
  Enter option number --->   []:
+```
+
+
+```
+usage: install.py [-h] [-s]
+
+optional arguments:
+  -h, --help          show this help message and exit
+  -s, --skip-install  skip Control-M installation, download packages only
 ```
 
 ## Output
