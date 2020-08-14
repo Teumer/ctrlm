@@ -14,8 +14,6 @@ Wish List
 - add order test job via API call
 - add support to modify user account names
 - add support to change install password
-- add support for 9.0.18.xxx version(s)
-- add support for 9.0.20.xxx version(s) when available
 """
 
 # NFS share with Control-M installation files
@@ -75,7 +73,7 @@ install_wjm_file = "DRCOB.9.0.00_Linux-x86_64.z"
 
 # Control-M/Enterprise Manager and Control-M/Server version
 version_dict = {
-    1: {"version": "9.0.20.000", "filename": "DROST.9.0.20.000_Linux-x86_64.tar.Z"},
+    1: {"version": "9.0.20.000", "filename": "DROST.9.0.20.000_Linux-x86_64.z"},
     2: {"version": "9.0.19.200", "filename": "DROST.9.0.19.200_Linux-x86_64.tar.Z"},
     3: {"version": "9.0.19.100", "filename": "DROST.9.0.19.100_Linux-x86_64.tar.Z"},
     4: {"version": "9.0.19.000", "filename": "DROST.9.0.19.000_Linux-x86_64.z"}
