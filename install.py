@@ -390,15 +390,15 @@ def install_managed_file_transfer():
 def install_advanced_file_transfer():
     if version == 1:
         return
+    # Stop Control-M/Agent process before install
+    stop_agent_process()
     install_advanced_file_transfer_agent()
     install_advanced_file_transfer_agent_fix_pack()
     install_advanced_file_transfer_enterprise_manager()
 
 
 def install_advanced_file_transfer_agent():
-    # Stop Control-M/Agent process before install
-    stop_agent_process()
-    # Install AFT - Advanced File Transfer
+    # Install AFT - Advanced File Transfer for Control-M/Agent
     f_path = file_path + 'aft/'
     if not os.path.exists(f_path):
         os.makedirs(f_path)
@@ -411,7 +411,7 @@ def install_advanced_file_transfer_agent():
 
 
 def install_advanced_file_transfer_agent_fix_pack():
-    # Install AFT - Advanced File Transfer
+    # Install AFT - Advanced File Transfer Fix Pack 3
     Command("su - s1 -c \"{}{} -s\"".format(
         file_path,
         install_aft_agent_fix_pack_file
@@ -421,11 +421,8 @@ def install_advanced_file_transfer_agent_fix_pack():
 
 
 def install_advanced_file_transfer_enterprise_manager():
-    # Install AFT - Advanced File Transfer
+    # Install AFT - Advanced File Transfer for Control-M/Enterprise Manager
     f_path = file_path + 'aft/'
-    # if not os.path.exists(f_path):
-    #     os.makedirs(f_path)
-    # Command("tar xzf {}{} -C {}".format(file_path, install_aft_enterprise_manager_file, f_path))
     Command("su - em1 -c \"{}EM/setup.sh -silent {}{}\"".format(
         f_path,
         file_path,
@@ -638,18 +635,18 @@ if __name__ == '__main__':
     # Download package to mount
     repo_mount()
     repo_copy()
-    # repo_extract()
+    repo_extract()
 
     # CTM installation
     if not args.skip_install:
-        # install_ctm_enterprise_manager()
-        # install_ctm_server()
-        # install_forecast()
-        # install_bim()
-        # install_self_service()
-        # install_workload_change_manager()
-        # install_wjm_enterprise_manager()
-        # install_wjm_agent()
+        install_ctm_enterprise_manager()
+        install_ctm_server()
+        install_forecast()
+        install_bim()
+        install_self_service()
+        install_workload_change_manager()
+        install_wjm_enterprise_manager()
+        install_wjm_agent()
 
         install_advanced_file_transfer()
         install_managed_file_transfer()
