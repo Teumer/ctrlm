@@ -55,8 +55,10 @@ install_mft_silent_file = "ctm_mft_silent_install.xml"
 install_mft_file = "DRAFP.9.0.20.000_Linux-x86_64.z"
 
 # Advanced File Transfer
-install_aft_silent_file = "ctm_aft_silent_install.xml"
-install_aft_file = "DRAFT.8.2.00_Linux-x86_64.z"
+install_aft_agent_silent_file = "ctm_aft_agent_silent_install.xml"
+install_aft_enterprise_manager_silent_file = "ctm_aft_enterprise_manager_silent_install.xml"
+install_aft_agent_file = "DRAFT.8.2.00_Linux-x86_64.z"
+install_aft_enterprise_manager_file = "EM_Side_Installation.zip"
 
 # Forecast
 install_forecast_silent_file = "ctm_forecast_silent_install.xml"
@@ -387,17 +389,35 @@ def install_managed_file_transfer():
 def install_advanced_file_transfer():
     if version == 1:
         return
+    install_advanced_file_transfer_agent()
+    install_advanced_file_transfer_enterprise_manager()
+
+
+def install_advanced_file_transfer_agent():
     # Stop Control-M/Agent process before install
     stop_agent_process()
-    # Install MFT - Managed File Transfer
+    # Install AFT - Advanced File Transfer
     f_path = file_path + 'aft/'
     if not os.path.exists(f_path):
         os.makedirs(f_path)
-    Command("tar xzf {}{} -C {}".format(file_path, install_aft_file, f_path))
+    Command("tar xzf {}{} -C {}".format(file_path, install_aft_agent_file, f_path))
     Command("su - s1 -c \"{}setup.sh -silent {}{}\"".format(
         f_path,
         file_path,
-        install_aft_silent_file
+        install_aft_agent_silent_file
+    ), realtime=True)
+
+
+def install_advanced_file_transfer_enterprise_manager():
+    # Install AFT - Advanced File Transfer
+    f_path = file_path + 'aft/'
+    # if not os.path.exists(f_path):
+    #     os.makedirs(f_path)
+    # Command("tar xzf {}{} -C {}".format(file_path, install_aft_enterprise_manager_file, f_path))
+    Command("su - em1 -c \"{}EM/setup.sh -silent {}{}\"".format(
+        f_path,
+        file_path,
+        install_aft_enterprise_manager_silent_file
     ), realtime=True)
 
 
