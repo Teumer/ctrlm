@@ -412,9 +412,8 @@ def install_advanced_file_transfer_agent():
 
 def install_advanced_file_transfer_agent_fix_pack():
     # Install AFT - Advanced File Transfer
-    f_path = file_path + 'aft/'
     Command("su - s1 -c \"{}{} -s\"".format(
-        f_path,
+        file_path,
         install_aft_agent_fix_pack_file
     ), realtime=True)
     # Force update
