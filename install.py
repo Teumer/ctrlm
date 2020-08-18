@@ -392,7 +392,7 @@ def install_advanced_file_transfer():
     if not os.path.exists(f_path):
         os.makedirs(f_path)
     Command("tar xzf {}{} -C {}".format(file_path, install_aft_file, f_path))
-    Command("su - em1 -c \"{}setup.sh -silent {}{}\"".format(
+    Command("su - s1 -c \"{}setup.sh -silent {}{}\"".format(
         f_path,
         file_path,
         install_aft_silent_file
@@ -603,14 +603,14 @@ if __name__ == '__main__':
 
     # CTM installation
     if not args.skip_install:
-        install_ctm_enterprise_manager()
-        install_ctm_server()
-        install_forecast()
-        install_bim()
-        install_self_service()
-        install_workload_change_manager()
-        install_wjm_enterprise_manager()
-        install_wjm_agent()
+        # install_ctm_enterprise_manager()
+        # install_ctm_server()
+        # install_forecast()
+        # install_bim()
+        # install_self_service()
+        # install_workload_change_manager()
+        # install_wjm_enterprise_manager()
+        # install_wjm_agent()
 
         install_advanced_file_transfer()
         install_managed_file_transfer()
