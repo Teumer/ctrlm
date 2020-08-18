@@ -387,6 +387,8 @@ def install_managed_file_transfer():
 def install_advanced_file_transfer():
     if version == 1:
         return
+    # Stop Control-M/Agent process before install
+    stop_agent_process()
     # Install MFT - Managed File Transfer
     f_path = file_path + 'aft/'
     if not os.path.exists(f_path):
@@ -480,6 +482,11 @@ def install_wjm_agent():
 def start_agent_process():
     # Start the Control-M/Agent process
     Command("su - s1 -c \"start-ag -u s1 -p ALL -s\"")
+
+
+def stop_agent_process():
+    # Stop the Control-M/Agent process
+    Command("su - s1 -c \"shut-ag -u s1 -p ALL -s\"")
 
 
 def api_get_port():
@@ -599,7 +606,7 @@ if __name__ == '__main__':
     # Download package to mount
     repo_mount()
     repo_copy()
-    repo_extract()
+    # repo_extract()
 
     # CTM installation
     if not args.skip_install:
