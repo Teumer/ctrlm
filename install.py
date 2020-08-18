@@ -54,6 +54,10 @@ install_server_file = "ctm_server_silent_install.xml"
 install_mft_silent_file = "ctm_mft_silent_install.xml"
 install_mft_file = "DRAFP.9.0.20.000_Linux-x86_64.z"
 
+# Advanced File Transfer
+install_aft_silent_file = "ctm_aft_silent_install.xml"
+install_aft_file = "DRAFT.8.2.00_Linux-x86_64.z"
+
 # Forecast
 install_forecast_silent_file = "ctm_forecast_silent_install.xml"
 install_forecast_file = "DRFOR_Linux-x86_64.tar.Z*"
@@ -380,6 +384,21 @@ def install_managed_file_transfer():
     ), realtime=True)
 
 
+def install_advanced_file_transfer():
+    if version == 1:
+        return
+    # Install MFT - Managed File Transfer
+    f_path = file_path + 'aft/'
+    if not os.path.exists(f_path):
+        os.makedirs(f_path)
+    Command("tar xzf {}{} -C {}".format(file_path, install_aft_file, f_path))
+    Command("su - em1 -c \"{}setup.sh -silent {}{}\"".format(
+        f_path,
+        file_path,
+        install_aft_silent_file
+    ), realtime=True)
+
+
 def install_forecast():
     # Install forecast
     f_path = file_path + 'forecast/'
@@ -593,7 +612,7 @@ if __name__ == '__main__':
         install_wjm_enterprise_manager()
         install_wjm_agent()
 
-        # install_advanced_file_transfer()
+        install_advanced_file_transfer()
         install_managed_file_transfer()
 
     # API
