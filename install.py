@@ -58,6 +58,7 @@ install_mft_file = "DRAFP.9.0.20.000_Linux-x86_64.z"
 install_aft_agent_silent_file = "ctm_aft_agent_silent_install.xml"
 install_aft_enterprise_manager_silent_file = "ctm_aft_enterprise_manager_silent_install.xml"
 install_aft_agent_file = "DRAFT.8.2.00_Linux-x86_64.z"
+install_aft_agent_fix_pack_file = "PAAFT.8.2.00.300_Linux-x86_64_INSTALL.BIN"
 install_aft_enterprise_manager_file = "EM_Side_Installation.zip"
 
 # Forecast
@@ -390,6 +391,7 @@ def install_advanced_file_transfer():
     if version == 1:
         return
     install_advanced_file_transfer_agent()
+    install_advanced_file_transfer_agent_fix_pack()
     install_advanced_file_transfer_enterprise_manager()
 
 
@@ -406,6 +408,17 @@ def install_advanced_file_transfer_agent():
         file_path,
         install_aft_agent_silent_file
     ), realtime=True)
+
+
+def install_advanced_file_transfer_agent_fix_pack():
+    # Install AFT - Advanced File Transfer
+    f_path = file_path + 'aft/'
+    Command("su - s1 -c \"{}{} -s\"".format(
+        f_path,
+        install_aft_agent_fix_pack_file
+    ), realtime=True)
+    # Force update
+    Command("ctmgetcm -HOST {} -APPLTYPE FILE_TRANS -ACTION get".format(hostname))
 
 
 def install_advanced_file_transfer_enterprise_manager():
