@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import base64
 import json
 import logging
 import os
@@ -9,15 +10,17 @@ import sys
 __author__ = "joe_teumer@bmc.com"
 
 """
-Wish List
-- add support for AFT/MFT
+Todo
 - add order test job via API call
-- add support to modify user account names
-- add support to change install password
+- add Application Pack install
+- add MOTD
+- add SSL Zone 1
+- add SSL Zone 2
+- add SSL Zone 3
 """
 
 # NFS share with Control-M installation files
-repo_host = "clm-aus-tvl3rt"
+repo_host = base64.b64decode('Y2xtLWF1cy10dmwzcnQ=')
 repo_host_dir = "/nfs/repo"
 
 # Log directory and log filename
