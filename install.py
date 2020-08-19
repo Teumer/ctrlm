@@ -537,7 +537,7 @@ def install_wjm_agent_patch():
     if not os.path.exists(f_path):
         os.makedirs(f_path)
     Command("tar xzf {}{} -C {}".format(file_path, install_wjm_patch_file, f_path))
-    Command("su - s1 -c \"echo y | {}/PACOB.0.0.00.006/install_patch.sh\"".format(
+    Command("su - s1 -c \"echo y | {}PACOB.0.0.00.006/install_patch.sh\"".format(
         f_path
     ), realtime=True)
 
