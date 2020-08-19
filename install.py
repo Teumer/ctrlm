@@ -12,7 +12,6 @@ __author__ = "joe_teumer@bmc.com"
 """
 Todo
 - add order test job via API call
-- add Application Pack install
 - add MOTD
 - add SSL Zone 1
 - add SSL Zone 2
@@ -683,11 +682,11 @@ if __name__ == '__main__':
         api_login()
         api_add_server()
 
-    # Start Control-M/Agent
-    start_agent_process()
+        # Start Control-M/Agent
+        start_agent_process()
 
-    # CSH Profile Fix
-    set_cshrc_profile()
-    set_shell_alias()
+        # CSH Profile Fix
+        set_cshrc_profile()
+        set_shell_alias()
 
-    logging.info("Control-M v{} installed successfully".format(version_dict[version]['version']))
+        logging.info("Control-M v{} installed successfully".format(version_dict[version]['version']))
