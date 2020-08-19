@@ -378,7 +378,7 @@ def install_ctm_server():
 def install_application_pack():
     # Install Control-M/Agent Application Pack
     start_agent_process()
-    Command("ctm provision upgrade::install {server} {agent} AppPack {version}".format(
+    Command("su - em1 -c \"ctm provision upgrade::install {server} {agent} AppPack {version}\"".format(
         server="Server1",
         agent=hostname,
         version=version_dict[version]['version']
