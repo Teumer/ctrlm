@@ -417,7 +417,7 @@ def install_advanced_file_transfer_agent_fix_pack():
         install_aft_agent_fix_pack_file
     ), realtime=True)
     # Force update
-    Command("ctmgetcm -HOST {} -APPLTYPE FILE_TRANS -ACTION get".format(hostname))
+    # Command("su - s1 -c \"ctmgetcm -HOST {} -APPLTYPE FILE_TRANS -ACTION get\"".format(hostname))
 
 
 def install_advanced_file_transfer_enterprise_manager():
