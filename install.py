@@ -385,7 +385,7 @@ def install_htop():
     Command("yum install htop -y")
 
 
-def install_application_pack():
+def api_install_application_pack():
     # Install Control-M/Agent Application Pack
     start_agent_process()
     Command("su - em1 -c \"ctm provision upgrade::install {server} {agent} AppPack {version}\"".format(
@@ -687,7 +687,6 @@ if __name__ == '__main__':
         install_wjm_agent_patch()
         install_advanced_file_transfer()
         install_managed_file_transfer()
-        install_application_pack()
         install_epel_repository()
         install_htop()
 
@@ -695,6 +694,7 @@ if __name__ == '__main__':
         api_add_environment()
         api_login()
         api_add_server()
+        api_install_application_pack()
 
         # Start Control-M/Agent
         start_agent_process()

@@ -13,6 +13,7 @@ Automated download and deployment of the following Control-M components:
 8. Control-M/Web Services, Java, and Messaging
 9. Control-M/Advanced File Transfer
 10. Control-M/Managed File Transfer
+11. Control-M/Application Pack
 
 
 ## Input / Requirements
