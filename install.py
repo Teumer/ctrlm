@@ -375,6 +375,16 @@ def install_ctm_server():
     ), realtime=True, critical=False)
 
 
+def install_application_pack():
+    # Install Control-M/Agent Application Pack
+    start_agent_process()
+    Command("ctm provision upgrade::install {server} {agent} AppPack {version}".format(
+        server="Server1",
+        agent=hostname,
+        version=version_dict[version]['version']
+    ))
+
+
 def install_managed_file_transfer():
     if version != 1:
         return
@@ -653,6 +663,8 @@ if __name__ == '__main__':
 
         install_advanced_file_transfer()
         install_managed_file_transfer()
+
+        install_application_pack()
 
     # API
     api_add_environment()
