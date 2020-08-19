@@ -83,6 +83,7 @@ install_workload_change_manager_file = "DRWCM_Linux-x86_64.tar.Z"
 install_wjm_em_silent_file = "ctm_wjm_em_silent_install.xml"
 install_wjm_agent_silent_file = "ctm_wjm_agent_silent_install.xml"
 install_wjm_file = "DRCOB.9.0.00_Linux-x86_64.z"
+install_wjm_patch_file = "PACOB.9.0.00.006_linux.tar.Z"
 
 # Control-M/Enterprise Manager and Control-M/Server version
 version_dict = {
@@ -505,7 +506,7 @@ def install_self_service():
 
 
 def install_wjm_enterprise_manager():
-    # Install WJM
+    # Install WJM for Control-M/Enterprise Manager
     f_path = file_path + 'wjm/'
     if not os.path.exists(f_path):
         os.makedirs(f_path)
@@ -518,7 +519,7 @@ def install_wjm_enterprise_manager():
 
 
 def install_wjm_agent():
-    # Install WJM
+    # Install WJM for Control-M/Agent
     f_path = file_path + 'wjm/'
     if not os.path.exists(f_path):
         os.makedirs(f_path)
@@ -527,6 +528,17 @@ def install_wjm_agent():
         f_path,
         file_path,
         install_wjm_agent_silent_file
+    ), realtime=True)
+
+
+def install_wjm_agent_patch():
+    # Install WJM Patch PACOB.9.0.00.006
+    f_path = file_path + 'wjm_patch/'
+    if not os.path.exists(f_path):
+        os.makedirs(f_path)
+    Command("tar xzf {}{} -C {}".format(file_path, install_wjm_patch_file, f_path))
+    Command("su - s1 -c \"echo y | {}/PACOB.0.0.00.006/install_patch.sh\"".format(
+        f_path
     ), realtime=True)
 
 
@@ -671,6 +683,7 @@ if __name__ == '__main__':
         install_workload_change_manager()
         install_wjm_enterprise_manager()
         install_wjm_agent()
+        install_wjm_agent_patch()
         install_advanced_file_transfer()
         install_managed_file_transfer()
         install_application_pack()
