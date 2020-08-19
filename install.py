@@ -588,6 +588,8 @@ def api_add_server():
     ctm  - Control-M/Server name
     id   - Defines a unique 3-character code to identify the Control-M/Server
     """
+    if api_server_already_added():
+        return
     Command("su - em1 -c \"ctm config server::add {host} {ctm} {id}\"".format(host=hostname,
                                                                               ctm="Server1",
                                                                               id="001"))
@@ -660,17 +662,13 @@ if __name__ == '__main__':
         install_workload_change_manager()
         install_wjm_enterprise_manager()
         install_wjm_agent()
-
         install_advanced_file_transfer()
         install_managed_file_transfer()
-
         install_application_pack()
 
-    # API
-    api_add_environment()
-    api_login()
-    # Add server
-    if not api_server_already_added():
+        # API
+        api_add_environment()
+        api_login()
         api_add_server()
 
     # Start Control-M/Agent
