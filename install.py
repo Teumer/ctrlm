@@ -54,6 +54,13 @@ install_server_file = "ctm_server_silent_install.xml"
 install_mft_silent_file = "ctm_mft_silent_install.xml"
 install_mft_file = "DRAFP.9.0.20.000_Linux-x86_64.z"
 
+# Advanced File Transfer
+install_aft_agent_silent_file = "ctm_aft_agent_silent_install.xml"
+install_aft_enterprise_manager_silent_file = "ctm_aft_enterprise_manager_silent_install.xml"
+install_aft_agent_file = "DRAFT.8.2.00_Linux-x86_64.z"
+install_aft_agent_fix_pack_file = "PAAFT.8.2.00.300_Linux-x86_64_INSTALL.BIN"
+install_aft_enterprise_manager_file = "EM_Side_Installation.zip"
+
 # Forecast
 install_forecast_silent_file = "ctm_forecast_silent_install.xml"
 install_forecast_file = "DRFOR_Linux-x86_64.tar.Z*"
@@ -380,6 +387,49 @@ def install_managed_file_transfer():
     ), realtime=True)
 
 
+def install_advanced_file_transfer():
+    if version == 1:
+        return
+    # Stop Control-M/Agent process before install
+    stop_agent_process()
+    install_advanced_file_transfer_agent()
+    install_advanced_file_transfer_agent_fix_pack()
+    install_advanced_file_transfer_enterprise_manager()
+
+
+def install_advanced_file_transfer_agent():
+    # Install AFT - Advanced File Transfer for Control-M/Agent
+    f_path = file_path + 'aft/'
+    if not os.path.exists(f_path):
+        os.makedirs(f_path)
+    Command("tar xzf {}{} -C {}".format(file_path, install_aft_agent_file, f_path))
+    Command("su - s1 -c \"{}setup.sh -silent {}{}\"".format(
+        f_path,
+        file_path,
+        install_aft_agent_silent_file
+    ), realtime=True)
+
+
+def install_advanced_file_transfer_agent_fix_pack():
+    # Install AFT - Advanced File Transfer Fix Pack 3
+    Command("su - s1 -c \"{}{} -s\"".format(
+        file_path,
+        install_aft_agent_fix_pack_file
+    ), realtime=True)
+    # Force update
+    # Command("su - s1 -c \"ctmgetcm -HOST {} -APPLTYPE FILE_TRANS -ACTION get\"".format(hostname))
+
+
+def install_advanced_file_transfer_enterprise_manager():
+    # Install AFT - Advanced File Transfer for Control-M/Enterprise Manager
+    f_path = file_path + 'aft/'
+    Command("su - em1 -c \"{}EM/setup.sh -silent {}{}\"".format(
+        f_path,
+        file_path,
+        install_aft_enterprise_manager_silent_file
+    ), realtime=True)
+
+
 def install_forecast():
     # Install forecast
     f_path = file_path + 'forecast/'
@@ -461,6 +511,11 @@ def install_wjm_agent():
 def start_agent_process():
     # Start the Control-M/Agent process
     Command("su - s1 -c \"start-ag -u s1 -p ALL -s\"")
+
+
+def stop_agent_process():
+    # Stop the Control-M/Agent process
+    Command("su - s1 -c \"shut-ag -u s1 -p ALL -s\"")
 
 
 def api_get_port():
@@ -593,7 +648,7 @@ if __name__ == '__main__':
         install_wjm_enterprise_manager()
         install_wjm_agent()
 
-        # install_advanced_file_transfer()
+        install_advanced_file_transfer()
         install_managed_file_transfer()
 
     # API
