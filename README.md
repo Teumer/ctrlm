@@ -11,6 +11,8 @@ Automated download and deployment of the following Control-M components:
 6. Control-M/Self Service
 7. Control-M/Workload Change Manager
 8. Control-M/Web Services, Java, and Messaging
+9. Control-M/Advanced File Transfer
+10. Control-M/Managed File Transfer
 
 
 ## Input / Requirements
