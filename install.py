@@ -375,6 +375,16 @@ def install_ctm_server():
     ), realtime=True, critical=False)
 
 
+def install_epel_repository():
+    # Install the epel repository for RHEL 7
+    Command("rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm")
+
+
+def install_htop():
+    # Install htop
+    Command("yum install htop -y")
+
+
 def install_application_pack():
     # Install Control-M/Agent Application Pack
     start_agent_process()
@@ -665,6 +675,8 @@ if __name__ == '__main__':
         install_advanced_file_transfer()
         install_managed_file_transfer()
         install_application_pack()
+        install_epel_repository()
+        install_htop()
 
         # API
         api_add_environment()
