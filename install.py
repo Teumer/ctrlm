@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import base64
 import json
 import logging
 import os
@@ -9,15 +10,16 @@ import sys
 __author__ = "joe_teumer@bmc.com"
 
 """
-Wish List
-- add support for AFT/MFT
+Todo
 - add order test job via API call
-- add support to modify user account names
-- add support to change install password
+- add MOTD
+- add SSL Zone 1
+- add SSL Zone 2
+- add SSL Zone 3
 """
 
 # NFS share with Control-M installation files
-repo_host = "clm-aus-tvl3rt"
+repo_host = base64.b64decode('Y2xtLWF1cy10dmwzcnQ=')
 repo_host_dir = "/nfs/repo"
 
 # Log directory and log filename
@@ -81,6 +83,7 @@ install_workload_change_manager_file = "DRWCM_Linux-x86_64.tar.Z"
 install_wjm_em_silent_file = "ctm_wjm_em_silent_install.xml"
 install_wjm_agent_silent_file = "ctm_wjm_agent_silent_install.xml"
 install_wjm_file = "DRCOB.9.0.00_Linux-x86_64.z"
+install_wjm_patch_file = "PACOB.9.0.00.006_linux.tar.Z"
 
 # Control-M/Enterprise Manager and Control-M/Server version
 version_dict = {
@@ -372,6 +375,26 @@ def install_ctm_server():
     ), realtime=True, critical=False)
 
 
+def install_epel_repository():
+    # Install the epel repository for RHEL 7
+    Command("rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm")
+
+
+def install_htop():
+    # Install htop
+    Command("yum install htop -y")
+
+
+def install_application_pack():
+    # Install Control-M/Agent Application Pack
+    start_agent_process()
+    Command("su - em1 -c \"ctm provision upgrade::install {server} {agent} AppPack {version}\"".format(
+        server="Server1",
+        agent=hostname,
+        version=version_dict[version]['version']
+    ))
+
+
 def install_managed_file_transfer():
     if version != 1:
         return
@@ -483,7 +506,7 @@ def install_self_service():
 
 
 def install_wjm_enterprise_manager():
-    # Install WJM
+    # Install WJM for Control-M/Enterprise Manager
     f_path = file_path + 'wjm/'
     if not os.path.exists(f_path):
         os.makedirs(f_path)
@@ -496,7 +519,7 @@ def install_wjm_enterprise_manager():
 
 
 def install_wjm_agent():
-    # Install WJM
+    # Install WJM for Control-M/Agent
     f_path = file_path + 'wjm/'
     if not os.path.exists(f_path):
         os.makedirs(f_path)
@@ -506,6 +529,18 @@ def install_wjm_agent():
         file_path,
         install_wjm_agent_silent_file
     ), realtime=True)
+
+
+def install_wjm_agent_patch():
+    # Install WJM Patch PACOB.9.0.00.006
+    f_path = file_path + 'wjm_patch/'
+    if not os.path.exists(f_path):
+        os.makedirs(f_path)
+    Command("tar xzf {}{} -C {}".format(file_path, install_wjm_patch_file, f_path))
+    # realtime=False as the patch has a clear command to clear the terminal
+    Command("su - s1 -c \"echo y | {}PACOB.9.0.00.006/install_patch.sh\"".format(
+        f_path
+    ), realtime=False)
 
 
 def start_agent_process():
@@ -575,6 +610,8 @@ def api_add_server():
     ctm  - Control-M/Server name
     id   - Defines a unique 3-character code to identify the Control-M/Server
     """
+    if api_server_already_added():
+        return
     Command("su - em1 -c \"ctm config server::add {host} {ctm} {id}\"".format(host=hostname,
                                                                               ctm="Server1",
                                                                               id="001"))
@@ -647,22 +684,23 @@ if __name__ == '__main__':
         install_workload_change_manager()
         install_wjm_enterprise_manager()
         install_wjm_agent()
-
+        install_wjm_agent_patch()
         install_advanced_file_transfer()
         install_managed_file_transfer()
+        install_application_pack()
+        install_epel_repository()
+        install_htop()
 
-    # API
-    api_add_environment()
-    api_login()
-    # Add server
-    if not api_server_already_added():
+        # API
+        api_add_environment()
+        api_login()
         api_add_server()
 
-    # Start Control-M/Agent
-    start_agent_process()
+        # Start Control-M/Agent
+        start_agent_process()
 
-    # CSH Profile Fix
-    set_cshrc_profile()
-    set_shell_alias()
+        # CSH Profile Fix
+        set_cshrc_profile()
+        set_shell_alias()
 
-    logging.info("Control-M v{} installed successfully".format(version_dict[version]['version']))
+        logging.info("Control-M v{} installed successfully".format(version_dict[version]['version']))
