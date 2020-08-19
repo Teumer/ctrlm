@@ -537,6 +537,7 @@ def install_wjm_agent_patch():
     if not os.path.exists(f_path):
         os.makedirs(f_path)
     Command("tar xzf {}{} -C {}".format(file_path, install_wjm_patch_file, f_path))
+    # realtime=False as the patch has a clear command to clear the terminal
     Command("su - s1 -c \"echo y | {}PACOB.9.0.00.006/install_patch.sh\"".format(
         f_path
     ), realtime=False)
@@ -671,24 +672,24 @@ if __name__ == '__main__':
     # Download package to mount
     repo_mount()
     repo_copy()
-    # repo_extract()
+    repo_extract()
 
     # CTM installation
     if not args.skip_install:
-        # install_ctm_enterprise_manager()
-        # install_ctm_server()
-        # install_forecast()
-        # install_bim()
-        # install_self_service()
-        # install_workload_change_manager()
+        install_ctm_enterprise_manager()
+        install_ctm_server()
+        install_forecast()
+        install_bim()
+        install_self_service()
+        install_workload_change_manager()
         install_wjm_enterprise_manager()
         install_wjm_agent()
         install_wjm_agent_patch()
-        # install_advanced_file_transfer()
-        # install_managed_file_transfer()
-        # install_application_pack()
-        # install_epel_repository()
-        # install_htop()
+        install_advanced_file_transfer()
+        install_managed_file_transfer()
+        install_application_pack()
+        install_epel_repository()
+        install_htop()
 
         # API
         api_add_environment()
