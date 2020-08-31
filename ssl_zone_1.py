@@ -13,13 +13,13 @@ class SSL:
         self.ca_key = "/home/em1/CA.key"
         self.ca_cert = "/home/em1/CA.cert"
         self.tomcat = "/home/em1/tomcat.p12"
-        self.subject = "\"/C=US/" \
+        self.subject = "/C=US/" \
                        "ST=Texas/" \
                        "L=Austin/" \
                        "O=BMC Software Ltd./" \
                        "OU=Workload Automation/" \
                        "CN=Teumer/" \
-                       "emailAddress=controlm_security@bmc.com\""
+                       "emailAddress=controlm_security@bmc.com"
 
     def run_ctmkeytool(self):
         # Private key file (.pem) and the CSR file (.csr)
@@ -55,11 +55,11 @@ class SSL:
                "-days 1825 " \
                "-passin pass:{password} " \
                "-out {ca_cert} " \
-               "-subj {subject}\"".format(
+               "-subj '{subject}'\"".format(
                 ca_key=self.ca_key,
                 password=self.password,
                 ca_cert=self.ca_cert,
-                subject=self.subject
+                subject=str(self.subject)
                 )
 
     def run_create_domain_certificate(self):
