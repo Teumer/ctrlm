@@ -6,6 +6,7 @@ import os
 import re
 import subprocess
 import sys
+from ssl_zone_1 import ssl_test()
 
 __author__ = "joe_teumer@bmc.com"
 
@@ -653,6 +654,11 @@ if __name__ == '__main__':
 
     # Get hostname
     hostname = Command('hostname').stdout
+
+    # todo debug
+    ssl_test()
+
+    exit(1)
 
     # Housekeeping
     set_add_user()
