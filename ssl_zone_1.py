@@ -54,12 +54,12 @@ class SSL:
                "-sha256 " \
                "-days 1825 " \
                "-passin pass:{password} " \
-               "-subj {subject} " \
-               "-out {ca_cert}\"".format(
+               "-out {ca_cert} " \
+               "-subj {subject}".format(
                 ca_key=self.ca_key,
                 password=self.password,
-                subject=self.subject,
-                ca_cert=self.ca_cert
+                ca_cert=self.ca_cert,
+                subject=self.subject
                 )
 
     def run_create_domain_certificate(self):
