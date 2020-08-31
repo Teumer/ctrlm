@@ -98,6 +98,7 @@ class SSL:
                 "-export " \
                 "-passout pass:{password} " \
                 "-CAfile {ca_key} " \
+                "-chain " \
                 "-out tomcat.p12 " \
                 "-name {hostname}-keystore " \
                 "-caname {hostname}-ca\"".format(
