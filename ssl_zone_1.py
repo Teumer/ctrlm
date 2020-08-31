@@ -53,7 +53,7 @@ class SSL:
                "-sha256 " \
                "-days 1825 " \
                "-passin pass:{password} " \
-               "-subj \"{subject}\" " \
+               "-subj {subject} " \
                "-out {ca_cert}\"".format(
                 ca_key=self.ca_key,
                 password=self.password,
