@@ -55,7 +55,7 @@ class SSL:
                "-days 1825 " \
                "-passin pass:{password} " \
                "-out {ca_cert} " \
-               "-subj \"{subject}\"\"".format(
+               "-subj {subject}".format(
                 ca_key=self.ca_key,
                 password=self.password,
                 ca_cert=self.ca_cert,
