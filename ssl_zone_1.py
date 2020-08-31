@@ -9,6 +9,7 @@ class SSL:
         self.zone_1_key = "/home/em1/ctm_em/data/SSL/private_keys/{}.pem".format(self.hostname)
         self.zone_1_csr = "/home/em1/ctm_em/data/SSL/certificate_requests/{}.csr".format(self.hostname)
         self.zone_1_cert = "/home/em1/{}.cert".format(self.hostname)
+        self.chain_cert = "/home/em1/chain.cert"
         self.ca_key = "/home/em1/CA.key"
         self.ca_cert = "/home/em1/CA.cert"
         self.tomcat = "/home/em1/tomcat.p12"
@@ -82,25 +83,27 @@ class SSL:
                 )
 
     def run_combine_domain_ca_certificate(self):
-        return "su - em1 -c \"cat {zone_1_cert} {ca_cert} > combined.cert \"".format(
+        return "su - em1 -c \"cat {zone_1_cert} {ca_cert} > {chain_cert} \"".format(
             zone_1_cert=self.zone_1_cert,
-            ca_cert=self.ca_cert
+            ca_cert=self.ca_cert,
+            chain_cert=self.chain_cert
         )
 
     def run_create_tomcat_keystore(self):
         # Create the tomcat.p12 keystore file
         return "su - em1 -c \"openssl pkcs12 " \
                 "-inkey {zone_1_key} " \
-                "-in {zone_1_cert} " \
+                "-in {chain_cert} " \
                 "-passin pass:{password} " \
                 "-export " \
                 "-passout pass:{password} " \
                 "-CAfile {ca_key} " \
+                "-chain " \
                 "-out tomcat.p12 " \
                 "-name {hostname}-keystore " \
                 "-caname {hostname}-ca\"".format(
                  zone_1_key=self.zone_1_key,
-                 zone_1_cert=self.zone_1_cert,
+                 chain_cert=self.chain_cert,
                  password=self.password,
                  ca_key=self.ca_key,
                  hostname=self.hostname
