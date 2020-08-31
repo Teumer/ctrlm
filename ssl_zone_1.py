@@ -18,7 +18,7 @@ class SSL:
                        "L=Austin/" \
                        "O=BMC Software Ltd./" \
                        "OU=Workload Automation/" \
-                       "CN=Teumer" \
+                       "CN=Teumer/" \
                        "emailAddress=controlm_security@bmc.com'"
 
     def run_ctmkeytool(self):
