@@ -12,13 +12,13 @@ class SSL:
         self.ca_key = "/home/em1/CA.key"
         self.ca_cert = "/home/em1/CA.cert"
         self.tomcat = "/home/em1/tomcat.p12"
-        self.subject = "/C=US/\
-                        ST=Texas/\
-                        L=Austin/\
-                        O=BMC Software Ltd./\
-                        OU=Workload Automation/\
-                        CN={hostname}/\
-                        emailAddress=controlm_security@bmc.com".format(hostname=self.hostname)
+        self.subject = "/C=US/ " \
+                       "ST=Texas/ " \
+                       "L=Austin/ " \
+                       "O=BMC Software Ltd./ " \
+                       "OU=Workload Automation/ " \
+                       "CN={hostname}/ " \
+                       "emailAddress=controlm_security@bmc.com".format(hostname=self.hostname)
 
     def run_ctmkeytool(self):
         # Private key file (.pem) and the CSR file (.csr)
