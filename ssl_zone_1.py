@@ -81,6 +81,12 @@ class SSL:
                  ext_file=self.zone_1_conf
                 )
 
+    def run_combine_domain_ca_certificate(self):
+        return "su - em1 -c \"cat {zone_1_cert} {ca_cert} > combined.cert \"".format(
+            zone_1_cert=self.zone_1_cert,
+            ca_cert=self.ca_cert
+        )
+
     def run_create_tomcat_keystore(self):
         # Create the tomcat.p12 keystore file
         return "su - em1 -c \"openssl pkcs12 " \

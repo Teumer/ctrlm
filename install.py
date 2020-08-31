@@ -624,6 +624,7 @@ def install_ssl_zone_1():
     Command(ssl.run_create_ca_key())
     Command(ssl.run_create_ca_certificate())
     Command(ssl.run_create_domain_certificate())
+    Command(ssl.run_combine_domain_ca_certificate())
     Command(ssl.run_create_tomcat_keystore())
 
 
