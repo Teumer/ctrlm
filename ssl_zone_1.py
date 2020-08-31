@@ -18,8 +18,8 @@ class SSL:
                        "L=Austin/" \
                        "O=BMC Software Ltd./" \
                        "OU=Workload Automation/" \
-                       "CN={hostname}/" \
-                       "emailAddress=controlm_security@bmc.com'".format(hostname=self.hostname)
+                       "CN=Teumer" \
+                       "emailAddress=controlm_security@bmc.com'"
 
     def run_ctmkeytool(self):
         # Private key file (.pem) and the CSR file (.csr)
