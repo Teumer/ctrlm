@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+
+# static variables
+domain="clm-aus-u525tn"
+password='empass11'
+subject="'/C=US/ST=Texas/L=Austin/O=BMC Software Ltd./OU=Workload Automation/CN=clm-aus-u525tn/emailAddress=controlm_security@bmc.com'"
+
+
+# Zone 1
+#ext_file="/home/em1/ctm_em/data/SSL/config/csr_params.cfg"
+
+# Zone 2 3
+ext_file="/home/em1/ctm_em/data/SSL/config/csr_params_zone23.cfg"
+
+
+# Zone 1
+#domain_csr="/home/em1/ctm_em/data/SSL/certificate_requests/clm-aus-u525tn_20200826_140836.csr"
+
+# Zone 2 3
+domain_csr="/home/em1/ctm_em/data/SSL/certificate_requests/clm-aus-u525tn_20200827_094504.csr"
+
+# Zone 1
+#domain_key="/home/em1/ctm_em/data/SSL/private_keys/clm-aus-u525tn_20200826_140836.pem"
+
+# Zone 2 3
+domain_key="/home/em1/ctm_em/data/SSL/private_keys/clm-aus-u525tn_20200827_094504.pem"
+
+
+
+
+# Create the private key and certificate signing request file
+#/home/em1/ctm_em/bin/ctmkeytool -create_csr -"password" empass11
+
+# Create CA private key
+#openssl genrsa -des3 -passout pass:"$password" -out CA.key 4096
+
+# todo - probably can delete this
+#openssl req -x509 -newkey rsa:2048 -sha256 -passout pass:"$password" -subj "$subject" -keyout CA.key
+#openssl req -x509 -newkey rsa:2048 -sha256 -passout pass:"$password" -subj "/C=US/ST=Texas/L=Austin/O=BMC Software Ltd./OU=Workload Automation/CN=clm-aus-u525tn/emailAddress=controlm_security@bmc.com" -keyout CA.key
+
+
+
+# Verify key
+#openssl rsa -check -in "$domain_key" -passin pass:"$password"
+#openssl rsa -check -in CA.key -passin pass:"$password"
+
+
+# Create CA root certificate
+# todo - test the subj variable
+#openssl req -x509 -new -key CA.key -sha256 -days 1825 -passin pass:"$password" -subj "$subject" -out CA.pem
+
+# this one works for sure
+#openssl req -x509 -new -key CA.key -sha256 -days 1825 -passin pass:"$password" -subj "/C=US/ST=Texas/L=Austin/O=BMC Software Ltd./OU=Workload Automation/CN=Teumer/emailAddress=controlm_security@bmc.com" -out CA.pem
+
+
+# Create domain certificate
+openssl x509 -req -in "$domain_csr" -out "$domain"-zone23.crt -CA CA.pem -CAkey CA.key -CAcreateserial -passin pass:"$password" -extfile "$ext_file" -extensions req_ext
+
+
+# View domain certificate entries
+#openssl x509 -text -noout -in "$domain".crt
+
+
+# Verify a private key matches a certificate and csr
+openssl rsa -noout -modulus -in "$domain_key" -passin pass:"$password" | openssl md5
+#openssl x509 -noout -modulus -in "$domain".crt | openssl md5
+openssl x509 -noout -modulus -in "$domain"-zone23.crt | openssl md5
+openssl req -noout -modulus -in "$domain_csr" | openssl md5
+
+
+# 9.0.20 SSL step Zone 1
+#openssl pkcs12 -inkey "$domain_key" -in "$domain".crt -passin pass:"$password" -export -passout pass:"$password" -CAfile CA.pem -chain -out tomcat.p12 -name "$domain"-keystore -caname "$domain"-ca
+
+# 9.0.20 SSL step Zone 2 3
+openssl pkcs12 -inkey "$domain_key" -in "$domain"-zone23.crt -passin pass:"$password" -export -passout pass:"$password" -CAfile CA.pem -chain -out "$domain"-zone23.p12
+
+
+# Zone 1
+#cat "$domain".crt CA.pem > combined.pem
+
+# Zone 2 3
+cat "$domain"-zone23.crt CA.pem > combined.pem
+
+openssl pkcs12 -inkey "$domain_key" -in combined.pem -passin pass:"$password" -export -passout pass:"$password" -CAfile CA.pem -out "$domain"-zone23.pfx
+
+
+# Convert PEM to PKCS12 - combine private key and certificate into PKCS12
+#openssl pkcs12 -inkey "$domain_key" -in "$domain".crt -passin pass:"$password" -export -passout pass:"$password" -CAfile CA.pem -out "$domain".pfx -name "$domain"-keystore -caname "$domain"-ca
+
+
+# Verify certificate was signed by a CA
+#openssl verify -verbose -CAfile CA.pem "$domain".crt
+
+openssl verify -verbose -CAfile CA.pem "$domain"-zone23.crt

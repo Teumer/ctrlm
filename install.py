@@ -6,7 +6,7 @@ import os
 import re
 import subprocess
 import sys
-from ssl_zone_1 import ssl_test()
+from ssl_zone_1 import ssl_test
 
 __author__ = "joe_teumer@bmc.com"
 
