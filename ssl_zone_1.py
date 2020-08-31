@@ -8,7 +8,7 @@ class SSL:
         self.zone_1_conf = "/home/em1/ctm_em/data/SSL/config/csr_params.cfg"
         self.zone_1_key = "/home/em1/ctm_em/data/SSL/private_keys/{}.pem".format(self.hostname)
         self.zone_1_csr = "/home/em1/ctm_em/data/SSL/certificate_requests/{}.csr".format(self.hostname)
-        self.zone_1_cert = "/home/em1/ctm_em/{}.cert".format(self.hostname)
+        self.zone_1_cert = "/home/em1/{}.cert".format(self.hostname)
         self.ca_key = "/home/em1/CA.key"
         self.ca_cert = "/home/em1/CA.cert"
         self.tomcat = "/home/em1/tomcat.p12"
