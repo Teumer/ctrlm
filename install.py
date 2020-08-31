@@ -6,7 +6,7 @@ import os
 import re
 import subprocess
 import sys
-from ssl_zone_1 import ssl_test
+from ssl_zone_1 import SSL
 
 __author__ = "joe_teumer@bmc.com"
 
@@ -618,6 +618,11 @@ def api_add_server():
                                                                               id="001"))
 
 
+def install_ssl_zone_1():
+    ssl = SSL(hostname)
+    Command(ssl.run_ctmkeytool())
+
+
 if __name__ == '__main__':
 
     # Create root logger
@@ -656,7 +661,7 @@ if __name__ == '__main__':
     hostname = Command('hostname').stdout
 
     # todo debug
-    ssl_test()
+    install_ssl_zone_1()
 
     exit(1)
 
