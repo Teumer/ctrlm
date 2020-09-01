@@ -17,7 +17,7 @@ class SSL:
                        "ST=Texas/" \
                        "L=Austin/" \
                        "O=BMC Software/" \
-                       "OU=Workload Automation/" \
+                       "OU=Control-M/" \
                        "CN=Teumer/" \
                        "emailAddress=controlm_security@bmc.com"
 
