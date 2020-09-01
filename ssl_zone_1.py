@@ -17,6 +17,7 @@ class SSL:
         self.ca_key = self.ssl_dir + "CA.key"
         self.ca_cert = self.ssl_dir + "CA.cert"
         self.keystore = self.ssl_dir + "tomcat.p12"
+        self.keystore_source  = "/home/em1/ctm_em/ini/ssl/tomcat.p12"
         self.subject = "/C=US/" \
                        "ST=Texas/" \
                        "L=Austin/" \
@@ -124,6 +125,11 @@ class SSL:
                  keystore=self.keystore,
                  hostname=self.hostname
                  )
+
+    def run_install_keystore(self):
+        from datetime import datetime
+        shutil.copyfile(self.keystore_source, self.keystore_source + datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p"))
+        shutil.copyfile(self.keystore, self.keystore_source)
 
 
 """

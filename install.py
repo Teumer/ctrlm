@@ -627,6 +627,7 @@ def install_ssl_zone_1():
     Command(ssl.run_create_domain_certificate())
     Command(ssl.run_create_combined_certificate())
     Command(ssl.run_create_tomcat_keystore())
+    Command(ssl.run_install_keystore())
 
 
 if __name__ == '__main__':
