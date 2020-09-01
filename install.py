@@ -621,7 +621,6 @@ def api_add_server():
 def install_ssl_zone_1():
     ssl = SSL(hostname)
     Command(ssl.run_create_csr_params())
-    exit(1)
     Command(ssl.run_create_domain_key_csr())
     Command(ssl.run_create_ca_key())
     Command(ssl.run_create_ca_certificate())

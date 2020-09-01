@@ -9,14 +9,14 @@ class SSL:
         self.password = "changeit"
         self.ctmkeytool_em = "/home/em1/ctm_em/bin/ctmkeytool"
         self.zone_1_conf = "/home/em1/ctm_em/data/SSL/config/csr_params_zone_1.cfg"
-        self.zone_2_conf = "/home/em1/ctm_em/data/SSL/config/csr_params_zone_2.cfg"
         self.zone_1_key = "/home/em1/ctm_em/data/SSL/private_keys/{}.pem".format(self.hostname)
         self.zone_1_csr = "/home/em1/ctm_em/data/SSL/certificate_requests/{}.csr".format(self.hostname)
-        self.zone_1_cert = "/home/em1/{}.cert".format(self.hostname)
-        self.combined_cert = "/home/em1/combined.cert"
-        self.ca_key = "/home/em1/CA.key"
-        self.ca_cert = "/home/em1/CA.cert"
-        self.tomcat = "/home/em1/tomcat.p12"
+        self.ssl_dir = "/home/em1/ssl/"
+        self.zone_1_cert = self.ssl_dir + self.hostname + ".cert"
+        self.combined_cert = self.ssl_dir + "combined.cert"
+        self.ca_key = self.ssl_dir + "CA.key"
+        self.ca_cert = self.ssl_dir + "CA.cert"
+        self.tomcat = self.ssl_dir + "tomcat.p12"
         self.subject = "/C=US/" \
                        "ST=Texas/" \
                        "L=Austin/" \
@@ -24,12 +24,14 @@ class SSL:
                        "OU=Control-M/" \
                        "CN=Teumer/" \
                        "emailAddress=admin@controlm.com"
+        if not os.path.exists(self.ssl_dir):
+            os.mkdir(self.ssl_dir)
 
     def run_create_csr_params(self):
         # Copy the csr params config file to ctm
         path = os.path.dirname(os.path.abspath(__file__)) + "/files/"
         shutil.copyfile(path + 'csr_params_zone_1.cfg', self.zone_1_conf)
-        # Create the csr params configuration file
+        # Modify the csr params configuration file
         return "sed -i 's/example.hostname/{hostname}/' {path}".format(hostname=self.hostname, path=self.zone_1_conf)
 
     def run_create_domain_key_csr(self):
