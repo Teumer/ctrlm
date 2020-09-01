@@ -1,10 +1,15 @@
+import os
+import shutil
+
+
 class SSL:
 
     def __init__(self, hostname):
         self.hostname = hostname
         self.password = "changeit"
         self.ctmkeytool_em = "/home/em1/ctm_em/bin/ctmkeytool"
-        self.zone_1_conf = "/home/em1/ctm_em/data/SSL/config/csr_params.cfg"
+        self.zone_1_conf = "/home/em1/ctm_em/data/SSL/config/csr_params_zone_1.cfg"
+        self.zone_2_conf = "/home/em1/ctm_em/data/SSL/config/csr_params_zone_2.cfg"
         self.zone_1_key = "/home/em1/ctm_em/data/SSL/private_keys/{}.pem".format(self.hostname)
         self.zone_1_csr = "/home/em1/ctm_em/data/SSL/certificate_requests/{}.csr".format(self.hostname)
         self.zone_1_cert = "/home/em1/{}.cert".format(self.hostname)
@@ -15,15 +20,17 @@ class SSL:
         self.subject = "/C=US/" \
                        "ST=Texas/" \
                        "L=Austin/" \
-                       "O=BMC/" \
+                       "O=Teumer/" \
                        "OU=Control-M/" \
                        "CN=Teumer/" \
-                       "emailAddress=controlm_security@bmc.com"
+                       "emailAddress=admin@controlm.com"
 
     def run_create_csr_params(self):
+        # Copy the csr params config file to ctm
+        path = os.path.dirname(os.path.abspath(__file__)) + "/files/"
+        shutil.copyfile(path, self.zone_1_conf)
         # Create the csr params configuration file
-        with open(self.zone_1_conf, 'w') as f:
-            pass
+        return "sed -i 's/example.hostname/{hostname}' {path}".format(hostname=self.hostname, path=self.zone_1_conf)
 
     def run_create_domain_key_csr(self):
         # Private key file (.pem) and the CSR file (.csr)
