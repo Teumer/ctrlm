@@ -83,6 +83,7 @@ class SSL:
                 )
 
     def run_combine_domain_ca_certificate(self):
+        # Combine CA and domain certificates
         return "su - em1 -c \"cat {zone_1_cert} {ca_cert} > {chain_cert} \"".format(
             zone_1_cert=self.zone_1_cert,
             ca_cert=self.ca_cert,
@@ -126,7 +127,4 @@ Helpful verification commands for troubleshooting
 openssl rsa -noout -modulus -in $domain_key -passin pass:$password | openssl md5
 #openssl x509 -noout -modulus -in $domain.cert | openssl md5
 openssl req -noout -modulus -in $domain_csr | openssl md5
-
-# Zone 1
-#cat "$domain".crt CA.pem > combined.pem
 """
