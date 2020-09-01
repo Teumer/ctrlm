@@ -4,7 +4,6 @@ class SSL:
         self.hostname = hostname
         self.password = "changeit"
         self.ctmkeytool_em = "/home/em1/ctm_em/bin/ctmkeytool"
-        # todo need to update this file
         self.zone_1_conf = "/home/em1/ctm_em/data/SSL/config/csr_params.cfg"
         self.zone_1_key = "/home/em1/ctm_em/data/SSL/private_keys/{}.pem".format(self.hostname)
         self.zone_1_csr = "/home/em1/ctm_em/data/SSL/certificate_requests/{}.csr".format(self.hostname)
@@ -20,6 +19,11 @@ class SSL:
                        "OU=Control-M/" \
                        "CN=Teumer/" \
                        "emailAddress=controlm_security@bmc.com"
+
+    def run_create_csr_params(self):
+        # Create the csr params configuration file
+        with open(self.zone_1_conf, 'w') as f:
+            pass
 
     def run_create_domain_key_csr(self):
         # Private key file (.pem) and the CSR file (.csr)
