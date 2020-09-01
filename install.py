@@ -620,11 +620,11 @@ def api_add_server():
 
 def install_ssl_zone_1():
     ssl = SSL(hostname)
-    Command(ssl.run_ctmkeytool())
+    Command(ssl.run_create_domain_key_csr())
     Command(ssl.run_create_ca_key())
     Command(ssl.run_create_ca_certificate())
     Command(ssl.run_create_domain_certificate())
-    Command(ssl.run_combine_domain_ca_certificate())
+    Command(ssl.run_create_combined_certificate())
     Command(ssl.run_create_tomcat_keystore())
 
 

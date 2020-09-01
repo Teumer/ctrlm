@@ -9,7 +9,7 @@ class SSL:
         self.zone_1_key = "/home/em1/ctm_em/data/SSL/private_keys/{}.pem".format(self.hostname)
         self.zone_1_csr = "/home/em1/ctm_em/data/SSL/certificate_requests/{}.csr".format(self.hostname)
         self.zone_1_cert = "/home/em1/{}.cert".format(self.hostname)
-        self.chain_cert = "/home/em1/chain.cert"
+        self.combined_cert = "/home/em1/combined.cert"
         self.ca_key = "/home/em1/CA.key"
         self.ca_cert = "/home/em1/CA.cert"
         self.tomcat = "/home/em1/tomcat.p12"
@@ -21,7 +21,7 @@ class SSL:
                        "CN=Teumer/" \
                        "emailAddress=controlm_security@bmc.com"
 
-    def run_ctmkeytool(self):
+    def run_create_domain_key_csr(self):
         # Private key file (.pem) and the CSR file (.csr)
         return "su - em1 -c \"{utility} " \
                "-create_csr " \
@@ -71,7 +71,8 @@ class SSL:
                 "-CA {ca_cert} " \
                 "-CAkey {ca_key} " \
                 "-CAcreateserial " \
-                "-passin pass:{password} " \
+                "-days 365 " \
+               "-passin pass:{password} " \
                 "-extfile {ext_file} " \
                 "-extensions req_ext\"".format(
                  zone_1_csr=self.zone_1_csr,
@@ -82,19 +83,19 @@ class SSL:
                  ext_file=self.zone_1_conf
                 )
 
-    def run_combine_domain_ca_certificate(self):
+    def run_create_combined_certificate(self):
         # Combine CA and domain certificates
-        return "su - em1 -c \"cat {zone_1_cert} {ca_cert} > {chain_cert} \"".format(
+        return "su - em1 -c \"cat {zone_1_cert} {ca_cert} > {combined_cert} \"".format(
             zone_1_cert=self.zone_1_cert,
             ca_cert=self.ca_cert,
-            chain_cert=self.chain_cert
+            combined_cert=self.combined_cert
         )
 
     def run_create_tomcat_keystore(self):
         # Create the tomcat.p12 keystore file
         return "su - em1 -c \"openssl pkcs12 " \
                 "-inkey {zone_1_key} " \
-                "-in {chain_cert} " \
+                "-in {combined_cert} " \
                 "-passin pass:{password} " \
                 "-export " \
                 "-passout pass:{password} " \
@@ -103,7 +104,7 @@ class SSL:
                 "-name {hostname}-keystore " \
                 "-caname {hostname}-ca\"".format(
                  zone_1_key=self.zone_1_key,
-                 chain_cert=self.chain_cert,
+                 combined_cert=self.combined_cert,
                  password=self.password,
                  ca_key=self.ca_key,
                  hostname=self.hostname
