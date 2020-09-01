@@ -30,7 +30,7 @@ class SSL:
         path = os.path.dirname(os.path.abspath(__file__)) + "/files/"
         shutil.copyfile(path + 'csr_params_zone_1.cfg', self.zone_1_conf)
         # Create the csr params configuration file
-        return "sed -i 's/example.hostname/{hostname}' {path}".format(hostname=self.hostname, path=self.zone_1_conf)
+        return "sed -i 's/example.hostname/{hostname}/' {path}".format(hostname=self.hostname, path=self.zone_1_conf)
 
     def run_create_domain_key_csr(self):
         # Private key file (.pem) and the CSR file (.csr)
