@@ -16,8 +16,8 @@ class SSL:
         self.subject = "/C=US/" \
                        "ST=Texas/" \
                        "L=Austin/" \
-                       "O=BMC_Software/" \
-                       "OU=Workload_Automation/" \
+                       "O=BMC Software/" \
+                       "OU=Workload Automation/" \
                        "CN=Teumer/" \
                        "emailAddress=controlm_security@bmc.com"
 
@@ -55,7 +55,7 @@ class SSL:
                "-days 1825 " \
                "-passin pass:{password} " \
                "-out {ca_cert} " \
-               "-subj {subject}\"".format(
+               "-subj \"{subject}\"\"".format(
                 ca_key=self.ca_key,
                 password=self.password,
                 ca_cert=self.ca_cert,
