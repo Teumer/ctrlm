@@ -72,7 +72,7 @@ class SSL:
                 "-CAkey {ca_key} " \
                 "-CAcreateserial " \
                 "-days 365 " \
-               "-passin pass:{password} " \
+                "-passin pass:{password} " \
                 "-extfile {ext_file} " \
                 "-extensions req_ext\"".format(
                  zone_1_csr=self.zone_1_csr,
