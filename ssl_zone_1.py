@@ -16,7 +16,7 @@ class SSL:
         self.combined_cert = self.ssl_dir + "combined.cert"
         self.ca_key = self.ssl_dir + "CA.key"
         self.ca_cert = self.ssl_dir + "CA.cert"
-        self.tomcat = self.ssl_dir + "tomcat.p12"
+        self.keystore = self.ssl_dir + "tomcat.p12"
         self.subject = "/C=US/" \
                        "ST=Texas/" \
                        "L=Austin/" \
@@ -114,13 +114,14 @@ class SSL:
                 "-export " \
                 "-passout pass:{password} " \
                 "-CAfile {ca_key} " \
-                "-out tomcat.p12 " \
+                "-out {keystore} " \
                 "-name {hostname}-keystore " \
                 "-caname {hostname}-ca\"".format(
                  zone_1_key=self.zone_1_key,
                  combined_cert=self.combined_cert,
                  password=self.password,
                  ca_key=self.ca_key,
+                 keystore=self.keystore,
                  hostname=self.hostname
                  )
 
