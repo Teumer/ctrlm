@@ -7,7 +7,7 @@ subject="'/C=US/ST=Texas/L=Austin/O=BMC Software Ltd./OU=Workload Automation/CN=
 
 
 # Zone 1
-#ext_file="/home/em1/ctm_em/data/SSL/config/csr_params.cfg"
+#ext_file="/home/em1/ctm_em/data/SSL/config/csr_params_zone_1.cfg"
 
 # Zone 2 3
 ext_file="/home/em1/ctm_em/data/SSL/config/csr_params_zone23.cfg"

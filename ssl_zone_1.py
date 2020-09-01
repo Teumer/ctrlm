@@ -28,7 +28,7 @@ class SSL:
     def run_create_csr_params(self):
         # Copy the csr params config file to ctm
         path = os.path.dirname(os.path.abspath(__file__)) + "/files/"
-        shutil.copyfile(path, self.zone_1_conf)
+        shutil.copyfile(path + 'csr_params_zone_1.cfg', self.zone_1_conf)
         # Create the csr params configuration file
         return "sed -i 's/example.hostname/{hostname}' {path}".format(hostname=self.hostname, path=self.zone_1_conf)
 
