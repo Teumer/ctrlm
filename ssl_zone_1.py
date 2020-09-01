@@ -128,8 +128,10 @@ class SSL:
 
     def run_install_keystore(self):
         from datetime import datetime
-        shutil.copyfile(self.keystore_source, self.keystore_source + datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p"))
+        shutil.copyfile(self.keystore_source, self.keystore_source + '.' +
+                        datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p"))
         shutil.copyfile(self.keystore, self.keystore_source)
+        return "Keystore installed successfully"
 
 
 """
