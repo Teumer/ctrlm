@@ -25,7 +25,8 @@ class SSL:
                        "CN=Teumer/" \
                        "emailAddress=admin@controlm.com"
         if not os.path.exists(self.ssl_dir):
-            os.mkdir(self.ssl_dir, 0777)
+            os.mkdir(self.ssl_dir)
+            os.chmod(self.ssl_dir, 0777)
 
     def run_create_csr_params(self):
         # Copy the csr params config file to ctm
