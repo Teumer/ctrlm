@@ -16,7 +16,7 @@ class SSL:
         self.subject = "/C=US/" \
                        "ST=Texas/" \
                        "L=Austin/" \
-                       "O=BMC Software/" \
+                       "O=BMC/" \
                        "OU=Control-M/" \
                        "CN=Teumer/" \
                        "emailAddress=controlm_security@bmc.com"
