@@ -59,14 +59,13 @@ class SSLZone23:
     def __init__(self, hostname):
         self.hostname = hostname
         self.ctmkeytool_em = "/home/em1/ctm_em/bin/ctmkeytool"
-        self.zone_23_key = "/home/em1/ctm_em/data/SSL/private_keys/{}.pem".format(self.hostname)
-        self.zone_23_csr = "/home/em1/ctm_em/data/SSL/certificate_requests/{}.csr".format(self.hostname)
-        self.zone_23_conf = "/home/em1/ctm_em/data/SSL/config/csr_params_zone_2_3.cfg"
-        self.ssl_dir = "/home/em1/ssl/"
-        self.zone_23_cert = self.ssl_dir + self.hostname + "-zone-2-3.cert"
         self.ctmkeytool_filename = self.hostname + "-zone-2-3"
-        self.keystore = self.ssl_dir + self.hostname + "-keystore-zone-2-3.p12"
-        self.combined_cert = self.ssl_dir + self.hostname + "-combined-zone-2-3.cert"
+        self.zone_23_key = "/home/em1/ctm_em/data/SSL/private_keys/{}.pem".format(self.ctmkeytool_filename)
+        self.zone_23_csr = "/home/em1/ctm_em/data/SSL/certificate_requests/{}.csr".format(self.ctmkeytool_filename)
+        self.zone_23_conf = "/home/em1/ctm_em/data/SSL/config/csr_params_zone_2_3.cfg"
+        self.zone_23_cert = SSL.ssl_dir + self.hostname + "-zone-2-3.cert"
+        self.keystore = SSL.ssl_dir + self.hostname + "-keystore-zone-2-3.p12"
+        self.combined_cert = SSL.ssl_dir + self.hostname + "-combined-zone-2-3.cert"
 
     def run_create_csr_params(self):
         # Copy the csr params config file to ctm
@@ -143,14 +142,14 @@ class SSLZone1:
     def __init__(self, hostname):
         self.hostname = hostname
         self.ctmkeytool_em = "/home/em1/ctm_em/bin/ctmkeytool"
+        self.ctmkeytool_filename = self.hostname + "-zone-1"
         self.zone_1_conf = "/home/em1/ctm_em/data/SSL/config/csr_params_zone_1.cfg"
-        self.zone_1_key = "/home/em1/ctm_em/data/SSL/private_keys/{}.pem".format(self.hostname)
-        self.zone_1_csr = "/home/em1/ctm_em/data/SSL/certificate_requests/{}.csr".format(self.hostname)
+        self.zone_1_key = "/home/em1/ctm_em/data/SSL/private_keys/{}.pem".format(self.ctmkeytool_filename)
+        self.zone_1_csr = "/home/em1/ctm_em/data/SSL/certificate_requests/{}.csr".format(self.ctmkeytool_filename)
         self.zone_1_cert = SSL.ssl_dir + self.hostname + "-zone-1.cert"
         self.combined_cert = SSL.ssl_dir + self.hostname + "-combined-zone-1.cert"
         self.keystore = SSL.ssl_dir + "tomcat.p12"
         self.keystore_source = "/home/em1/ctm_em/ini/ssl/tomcat.p12"
-        self.ctmkeytool_filename = self.hostname + "-zone-1"
 
     def run_create_csr_params(self):
         # Copy the csr params config file to ctm
