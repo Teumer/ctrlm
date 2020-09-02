@@ -63,7 +63,9 @@ class SSLZone23:
 
     def __init__(self, hostname):
         self.hostname = hostname
-        self.ctmkeytool = "/home/s1/ctm_server/scripts/ctmkeytool"
+        self.ctmkeytool_em = "/home/em1/ctm_em/bin/ctmkeytool"
+        self.ctmkeytool_srv = "/home/s1/ctm_server/scripts/ctmkeytool"
+        self.ctmkeytool_ag = "/home/s1/ctm_agent/ctm/exe/ctmkeytool"
         self.ctmkeytool_filename = self.hostname + "-zone-2-3"
         self.zone_23_key = "/home/em1/ctm_em/data/SSL/private_keys/{}.pem".format(self.ctmkeytool_filename)
         self.zone_23_csr = "/home/em1/ctm_em/data/SSL/certificate_requests/{}.csr".format(self.ctmkeytool_filename)
@@ -71,6 +73,9 @@ class SSLZone23:
         self.zone_23_cert = SSL.ssl_dir + self.hostname + "-zone-2-3.cert"
         self.keystore = SSL.ssl_dir + self.hostname + "-keystore-zone-2-3.p12"
         self.combined_cert = SSL.ssl_dir + self.hostname + "-combined-zone-2-3.cert"
+        self.encryption_key_em = "/home/em1/ctm_em/etc/site/resource/local/tree.bin"
+        self.encryption_key_server = "/home/s1/ctm_server/data/SSL/cert/tree.bin"
+        self.encryption_key_agent = "/home/s1/ctm_agent/ctm/data/SSL/cert/tree.bin"
 
     def run_create_csr_params(self):
         # Copy the csr params config file to ctm
@@ -87,7 +92,7 @@ class SSLZone23:
                "-password {password} " \
                "-conf_file {configuration} " \
                "-out {filename}\"".format(
-                utility=self.ctmkeytool,
+                utility=self.ctmkeytool_srv,
                 password=SSL.password,
                 configuration=self.zone_23_conf,
                 filename=self.ctmkeytool_filename
@@ -139,6 +144,42 @@ class SSLZone23:
                 ca_key=SSL.ca_key,
                 keystore=self.keystore,
                 hostname=self.hostname
+                )
+
+    def run_install_enterprise_manager(self):
+        # Deploy SSL on Control-M/Enterprise Manager
+        return "su - em1 -c \"{utility} " \
+               "-keystore {keystore} " \
+               "-password {password} " \
+               "-passwkey {encryption_key}\"".format(
+                utility=self.ctmkeytool_em,
+                keystore=self.keystore,
+                password=SSL.password,
+                encryption_key=self.encryption_key_em
+                )
+
+    def run_install_server(self):
+        # Deploy SSL on Control-M/Server
+        return "su - s1 -c \"{utility} " \
+               "-keystore {keystore} " \
+               "-password {password} " \
+               "-passwkey {encryption_key}\"".format(
+                utility=self.ctmkeytool_srv,
+                keystore=self.keystore,
+                password=SSL.password,
+                encryption_key=self.encryption_key_server
+                )
+
+    def run_install_agent(self):
+        # Deploy SSL on Control-M/Agent
+        return "su - s1 -c \"{utility} " \
+               "-keystore {keystore} " \
+               "-password {password} " \
+               "-passwkey {encryption_key}\"".format(
+                utility=self.ctmkeytool_ag,
+                keystore=self.keystore,
+                password=SSL.password,
+                encryption_key=self.encryption_key_agent
                 )
 
 
