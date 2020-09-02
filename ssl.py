@@ -117,7 +117,7 @@ class SSLZone23:
 
     def run_create_combined_certificate(self):
         # Combine CA and domain certificates
-        return "su - s1 -c \"cat {zone_23_cert} {ca_cert} > {combined_cert} \"".format(
+        return "su - em1 -c \"cat {zone_23_cert} {ca_cert} > {combined_cert} \"".format(
                 zone_23_cert=self.zone_23_cert,
                 ca_cert=SSL.ca_cert,
                 combined_cert=self.combined_cert
@@ -125,7 +125,7 @@ class SSLZone23:
 
     def run_create_tomcat_keystore(self):
         # Create the p12 keystore file
-        return "su - s1 -c \"openssl pkcs12 " \
+        return "su - em1 -c \"openssl pkcs12 " \
                "-inkey {zone_23_key} " \
                "-in {combined_cert} " \
                "-passin pass:{password} " \
