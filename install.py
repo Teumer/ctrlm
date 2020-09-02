@@ -704,6 +704,11 @@ if __name__ == '__main__':
     repo_copy()
     repo_extract()
 
+    # SSL
+    if args.setup_ssl:
+        install_ssl_zones()
+        exit(0)
+
     # CTM installation
     if not args.skip_install:
         # Core
@@ -730,10 +735,6 @@ if __name__ == '__main__':
         api_login()
         api_add_server()
         api_install_application_pack()
-
-        # SSL
-        if args.setup_ssl:
-            install_ssl_zones()
 
         # Start Control-M/Agent
         start_agent_process()

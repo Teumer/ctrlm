@@ -88,12 +88,12 @@ class SSLZone23:
 
     def run_create_domain_key_csr(self):
         # Private key file (.pem) and the CSR file (.csr)
-        return "su - s1 -c \"{utility} " \
+        return "su - em1 -c \"{utility} " \
                "-create_csr " \
                "-password {password} " \
                "-conf_file {configuration} " \
                "-out {filename}\"".format(
-                utility=self.ctmkeytool_srv,
+                utility=self.ctmkeytool_em,
                 password=SSL.password,
                 configuration=self.zone_23_conf,
                 filename=self.ctmkeytool_filename
