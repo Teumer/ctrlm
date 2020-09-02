@@ -684,6 +684,24 @@ if __name__ == '__main__':
     # Get hostname
     hostname = Command('hostname').stdout
 
+    # SSL
+    if args.setup_ssl:
+        install_ssl_zones()
+        exit(0)
+
+    # Download package to mount
+    repo_mount()
+    repo_copy()
+    repo_extract()
+
+    # Exit here if skip install - download only
+    if args.skip_install:
+        exit(0)
+
+    #####################
+    # CTM installation  #
+    #####################
+
     # Housekeeping
     set_add_user()
     set_user_password()
@@ -699,48 +717,36 @@ if __name__ == '__main__':
     set_auto_script_reload()
     set_auto_script_enable()
 
-    # Download package to mount
-    repo_mount()
-    repo_copy()
-    repo_extract()
+    # Core
+    install_ctm_enterprise_manager()
+    install_ctm_server()
 
-    # SSL
-    if args.setup_ssl:
-        install_ssl_zones()
-        exit(0)
+    # Add-Ons
+    install_forecast()
+    install_bim()
+    install_self_service()
+    install_workload_change_manager()
+    install_wjm_enterprise_manager()
+    install_wjm_agent()
+    install_wjm_agent_patch()
+    install_advanced_file_transfer()
+    install_managed_file_transfer()
 
-    # CTM installation
-    if not args.skip_install:
-        # Core
-        install_ctm_enterprise_manager()
-        install_ctm_server()
+    # EPEL repository
+    install_epel_repository()
+    install_htop()
 
-        # Add-Ons
-        install_forecast()
-        install_bim()
-        install_self_service()
-        install_workload_change_manager()
-        install_wjm_enterprise_manager()
-        install_wjm_agent()
-        install_wjm_agent_patch()
-        install_advanced_file_transfer()
-        install_managed_file_transfer()
+    # API
+    api_add_environment()
+    api_login()
+    api_add_server()
+    api_install_application_pack()
 
-        # EPEL repository
-        install_epel_repository()
-        install_htop()
+    # Start Control-M/Agent
+    start_agent_process()
 
-        # API
-        api_add_environment()
-        api_login()
-        api_add_server()
-        api_install_application_pack()
+    # CSH Profile Fix
+    set_cshrc_profile()
+    set_shell_alias()
 
-        # Start Control-M/Agent
-        start_agent_process()
-
-        # CSH Profile Fix
-        set_cshrc_profile()
-        set_shell_alias()
-
-        logging.info("Control-M v{} installed successfully".format(version_dict[version]['version']))
+    logging.info("Control-M v{} installed successfully".format(version_dict[version]['version']))
