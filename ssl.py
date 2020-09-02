@@ -64,7 +64,7 @@ class SSLZone23:
         self.ssl_dir = "/home/em1/ssl/"
         self.zone_23_cert = self.ssl_dir + self.hostname + ".cert"
         self.filename = self.hostname + "_zone_2_3"
-        self.keystore = self.hostname + "_zone_2_3.p12"
+        self.keystore = self.ssl_dir + self.hostname + "_zone_2_3.p12"
         self.combined_cert = self.ssl_dir + self.hostname + "_combined_zone_2_3.cert"
 
     def run_create_csr_params(self):
