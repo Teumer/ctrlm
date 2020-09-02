@@ -4,7 +4,7 @@ import shutil
 
 class SSL:
 
-    ssl_dir = "/home/em1/ssl/"
+    ssl_dir = "/auto_ssl/"
     ca_cert = ssl_dir + "CA.cert"
     ca_key = ssl_dir + "CA.key"
     ca_days_to_expire = '1825'
