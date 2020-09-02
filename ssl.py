@@ -19,9 +19,10 @@ class SSL:
               "emailAddress=admin@controlm.com"
 
     def __init__(self):
-        if not os.path.exists(self.ssl_dir):
-            os.mkdir(self.ssl_dir)
-            os.chmod(self.ssl_dir, 0777)
+        if os.path.exists(self.ssl_dir):
+            os.rmdir(self.ssl_dir)
+        os.mkdir(self.ssl_dir)
+        os.chmod(self.ssl_dir, 0777)
 
     def run_create_ca_key(self):
         # Create CA private key with DES in ede cbc mode (168 bit key)
@@ -62,10 +63,10 @@ class SSLZone23:
         self.zone_23_csr = "/home/em1/ctm_em/data/SSL/certificate_requests/{}.csr".format(self.hostname)
         self.zone_23_conf = "/home/em1/ctm_em/data/SSL/config/csr_params_zone_2_3.cfg"
         self.ssl_dir = "/home/em1/ssl/"
-        self.zone_23_cert = self.ssl_dir + self.hostname + ".cert"
-        self.filename = self.hostname + "_zone_2_3"
-        self.keystore = self.ssl_dir + self.hostname + "_zone_2_3.p12"
-        self.combined_cert = self.ssl_dir + self.hostname + "_combined_zone_2_3.cert"
+        self.zone_23_cert = self.ssl_dir + self.hostname + "-zone-2-3.cert"
+        self.ctmkeytool_filename = self.hostname + "-zone-2-3"
+        self.keystore = self.ssl_dir + self.hostname + "-keystore-zone-2-3.p12"
+        self.combined_cert = self.ssl_dir + self.hostname + "-combined-zone-2-3.cert"
 
     def run_create_csr_params(self):
         # Copy the csr params config file to ctm
@@ -85,7 +86,7 @@ class SSLZone23:
                 utility=self.ctmkeytool_em,
                 password=SSL.password,
                 configuration=self.zone_23_conf,
-                filename=self.filename
+                filename=self.ctmkeytool_filename
                 )
 
     def run_create_domain_certificate(self):
@@ -145,13 +146,11 @@ class SSLZone1:
         self.zone_1_conf = "/home/em1/ctm_em/data/SSL/config/csr_params_zone_1.cfg"
         self.zone_1_key = "/home/em1/ctm_em/data/SSL/private_keys/{}.pem".format(self.hostname)
         self.zone_1_csr = "/home/em1/ctm_em/data/SSL/certificate_requests/{}.csr".format(self.hostname)
-        self.ssl_dir = "/home/em1/ssl/"
-        self.zone_1_cert = self.ssl_dir + self.hostname + ".cert"
-        self.combined_cert = self.ssl_dir + "combined.cert"
-        self.ca_key = self.ssl_dir + "CA.key"
-        self.ca_cert = self.ssl_dir + "CA.cert"
-        self.keystore = self.ssl_dir + "tomcat.p12"
+        self.zone_1_cert = SSL.ssl_dir + self.hostname + "-zone-1.cert"
+        self.combined_cert = SSL.ssl_dir + self.hostname + "-combined-zone-1.cert"
+        self.keystore = SSL.ssl_dir + "tomcat.p12"
         self.keystore_source = "/home/em1/ctm_em/ini/ssl/tomcat.p12"
+        self.ctmkeytool_filename = self.hostname + "-zone-1"
 
     def run_create_csr_params(self):
         # Copy the csr params config file to ctm
@@ -166,11 +165,11 @@ class SSLZone1:
                "-create_csr " \
                "-password {password} " \
                "-conf_file {configuration} " \
-               "-out {hostname}\"".format(
+               "-out {filename}\"".format(
                 utility=self.ctmkeytool_em,
                 password=SSL.password,
                 configuration=self.zone_1_conf,
-                hostname=self.hostname
+                filename=self.ctmkeytool_filename
                 )
 
     def run_create_domain_certificate(self):
@@ -188,8 +187,8 @@ class SSLZone1:
                 "-extensions req_ext\"".format(
                  zone_1_csr=self.zone_1_csr,
                  zone_1_cert=self.zone_1_cert,
-                 ca_cert=self.ca_cert,
-                 ca_key=self.ca_key,
+                 ca_cert=SSL.ca_cert,
+                 ca_key=SSL.ca_key,
                  password=SSL.password,
                  ext_file=self.zone_1_conf
                 )
@@ -198,7 +197,7 @@ class SSLZone1:
         # Combine CA and domain certificates
         return "su - em1 -c \"cat {zone_1_cert} {ca_cert} > {combined_cert} \"".format(
             zone_1_cert=self.zone_1_cert,
-            ca_cert=self.ca_cert,
+            ca_cert=SSL.ca_cert,
             combined_cert=self.combined_cert
         )
 
@@ -217,7 +216,7 @@ class SSLZone1:
                  zone_1_key=self.zone_1_key,
                  combined_cert=self.combined_cert,
                  password=SSL.password,
-                 ca_key=self.ca_key,
+                 ca_key=SSL.ca_key,
                  keystore=self.keystore,
                  hostname=self.hostname
                  )
