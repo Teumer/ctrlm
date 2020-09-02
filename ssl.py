@@ -25,6 +25,7 @@ class SSL:
         os.chmod(self.ssl_dir, 0777)
 
     def run_open_file_permissions(self):
+        # Open file permissions on SSL files
         for root, dirs, files in os.walk(self.ssl_dir):
             for f in files:
                 os.chmod(os.path.join(root, f), 0777)
