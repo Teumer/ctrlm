@@ -622,6 +622,7 @@ def install_ssl_zone_1():
     ssl = SSL()
     Command(ssl.run_create_ca_key())
     Command(ssl.run_create_ca_certificate())
+    Command(ssl.run_open_file_permissions())
 
     ssl_zone_1 = SSLZone1(hostname)
     Command(ssl_zone_1.run_create_csr_params())

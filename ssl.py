@@ -1,6 +1,5 @@
 import os
 import shutil
-import stat
 
 
 class SSL:
@@ -23,7 +22,12 @@ class SSL:
         if os.path.exists(self.ssl_dir):
             shutil.rmtree(self.ssl_dir, ignore_errors=True)
         os.mkdir(self.ssl_dir)
-        os.chmod(self.ssl_dir, stat.S_ISGID)
+        os.chmod(self.ssl_dir, 0777)
+
+    def run_open_file_permissions(self):
+        for root, dirs, files in os.walk(self.ssl_dir):
+            for f in files:
+                os.chmod(os.path.join(root, f), 0777)
 
     def run_create_ca_key(self):
         # Create CA private key with DES in ede cbc mode (168 bit key)
