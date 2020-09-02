@@ -70,7 +70,7 @@ class SSLZone23:
     def run_create_csr_params(self):
         # Copy the csr params config file to ctm
         path = os.path.dirname(os.path.abspath(__file__)) + "/files/"
-        shutil.copyfile(path + 'csr_params_zone_23.cfg', self.zone_23_conf)
+        shutil.copyfile(path + 'csr_params_zone_2_3.cfg', self.zone_23_conf)
         # Modify the csr params configuration file
         return "sed -i 's/example.hostname/{hostname}/' {path}".format(hostname=self.hostname,
                                                                        path=self.zone_23_conf)
