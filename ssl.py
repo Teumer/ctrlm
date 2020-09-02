@@ -82,7 +82,7 @@ class SSLZone23:
 
     def run_create_domain_key_csr(self):
         # Private key file (.pem) and the CSR file (.csr)
-        return "su - em1 -c \"{utility} " \
+        return "su - s1 -c \"{utility} " \
                "-create_csr " \
                "-password {password} " \
                "-conf_file {configuration} " \
