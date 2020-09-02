@@ -150,6 +150,7 @@ class SSLZone23:
     def run_install_enterprise_manager(self):
         # Deploy SSL on Control-M/Enterprise Manager
         return "su - em1 -c \"{utility} " \
+               "-silent " \
                "-keystore {keystore} " \
                "-password {password} " \
                "-passwkey {encryption_key}\"".format(
