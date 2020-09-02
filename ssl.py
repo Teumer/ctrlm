@@ -20,7 +20,7 @@ class SSL:
 
     def __init__(self):
         if os.path.exists(self.ssl_dir):
-            os.rmdir(self.ssl_dir)
+            shutil.rmtree(self.ssl_dir, ignore_errors=True)
         os.mkdir(self.ssl_dir)
         os.chmod(self.ssl_dir, 0777)
 
