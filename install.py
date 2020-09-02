@@ -643,6 +643,7 @@ def install_ssl_zone_1():
     Command(ssl_zone_23.run_create_domain_certificate())
     Command(ssl_zone_23.run_create_combined_certificate())
     Command(ssl_zone_23.run_create_tomcat_keystore())
+    ssl.run_open_file_permissions()
     Command(ssl_zone_23.run_install_enterprise_manager())
     Command(ssl_zone_23.run_install_server())
     Command(ssl_zone_23.run_install_agent())
