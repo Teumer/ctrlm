@@ -148,7 +148,7 @@ class SSLZone1:
         self.zone_1_csr = "/home/em1/ctm_em/data/SSL/certificate_requests/{}.csr".format(self.ctmkeytool_filename)
         self.zone_1_cert = SSL.ssl_dir + self.hostname + "-zone-1.cert"
         self.combined_cert = SSL.ssl_dir + self.hostname + "-combined-zone-1.cert"
-        self.keystore = SSL.ssl_dir + "tomcat.p12"
+        self.keystore = SSL.ssl_dir + self.hostname + "-keystore-zone-1.p12"
         self.keystore_source = "/home/em1/ctm_em/ini/ssl/tomcat.p12"
 
     def run_create_csr_params(self):
