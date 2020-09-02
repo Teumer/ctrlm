@@ -106,7 +106,6 @@ class SSLZone23:
                "-out {zone_23_cert} " \
                "-CA {ca_cert} " \
                "-CAkey {ca_key} " \
-               "-CAcreateserial " \
                "-days {days} " \
                "-passin pass:{password} " \
                "-extfile {ext_file} " \
@@ -225,7 +224,6 @@ class SSLZone1:
                 "-out {zone_1_cert} " \
                 "-CA {ca_cert} " \
                 "-CAkey {ca_key} " \
-                "-CAcreateserial " \
                 "-days 365 " \
                 "-passin pass:{password} " \
                 "-extfile {ext_file} " \
