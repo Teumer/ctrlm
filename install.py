@@ -622,7 +622,6 @@ def install_ssl_zone_1():
     ssl = SSL()
     Command(ssl.run_create_ca_key())
     Command(ssl.run_create_ca_certificate())
-    Command(ssl.run_open_file_permissions())
 
     ssl_zone_1 = SSLZone1(hostname)
     Command(ssl_zone_1.run_create_csr_params())
@@ -634,6 +633,9 @@ def install_ssl_zone_1():
 
     # Tomcat Configuration Manager > SSL Mode > Enable SSL (requires web server recycle)
     Command("su - em1 -c \"manage_webserver -action set_tomcat_conf -sslMode TRUE\"")
+
+    # Open SSL file permissions for Control-M/Server and Control-M/Agent users
+    Command(ssl.run_open_file_permissions())
 
     ssl_zone_23 = SSLZone23(hostname)
     Command(ssl_zone_23.run_create_csr_params())
