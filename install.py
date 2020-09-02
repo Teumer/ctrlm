@@ -626,7 +626,7 @@ def install_ssl_zones():
     Command(ssl_zone_1.run_create_domain_certificate())
     Command(ssl_zone_1.run_create_combined_certificate())
     Command(ssl_zone_1.run_create_tomcat_keystore())
-    Command(ssl_zone_1.run_install_keystore())
+    ssl_zone_1.run_install_keystore()
 
     # Tomcat Configuration Manager > SSL Mode > Enable SSL (requires web server recycle)
     Command("su - em1 -c \"manage_webserver -action set_tomcat_conf -sslMode TRUE\"")

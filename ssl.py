@@ -2,6 +2,26 @@ import os
 import shutil
 
 
+"""
+Helpful troubleshooting commands
+
+# Verify key
+# openssl rsa -check -in $domain_key -passin pass:$password
+# openssl rsa -check -in $CA.key -passin pass:$password
+
+# View certificate entries
+#openssl x509 -text -noout -in $domain.cert
+
+# Verify certificate was signed by a CA
+#openssl verify -verbose -CAfile $CA.key $domain.cert
+
+# Verify a private key matches a certificate and csr
+openssl rsa -noout -modulus -in $domain_key -passin pass:$password | openssl md5
+openssl x509 -noout -modulus -in $domain.cert | openssl md5
+openssl req -noout -modulus -in $domain_csr | openssl md5
+"""
+
+
 class SSL:
 
     ssl_dir = "/auto_ssl/"
@@ -273,24 +293,3 @@ class SSLZone1:
         shutil.copyfile(self.keystore_source, self.keystore_source + '.' +
                         datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p"))
         shutil.copyfile(self.keystore, self.keystore_source)
-        return "echo Keystore installed successfully"
-
-
-"""
-Helpful verification commands for troubleshooting
-
-# Verify key
-# openssl rsa -check -in $domain_key -passin pass:$password
-# openssl rsa -check -in $CA.key -passin pass:$password
-
-# View domain certificate entries
-#openssl x509 -text -noout -in $domain.cert
-
-# Verify certificate was signed by a CA
-#openssl verify -verbose -CAfile $CA.key $domain.cert
-
-# Verify a private key matches a certificate and csr
-openssl rsa -noout -modulus -in $domain_key -passin pass:$password | openssl md5
-#openssl x509 -noout -modulus -in $domain.cert | openssl md5
-openssl req -noout -modulus -in $domain_csr | openssl md5
-"""
