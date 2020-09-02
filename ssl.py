@@ -95,7 +95,7 @@ class SSLZone23:
 
     def run_create_domain_certificate(self):
         # Create domain certificate
-        return "openssl x509 " \
+        return "su - em1 -c \"openssl x509 " \
                "-req " \
                "-in {zone_23_csr} " \
                "-out {zone_23_cert} " \
@@ -105,7 +105,7 @@ class SSLZone23:
                "-days {days} " \
                "-passin pass:{password} " \
                "-extfile {ext_file} " \
-               "-extensions req_ext".format(
+               "-extensions req_ext\"".format(
                 zone_23_csr=self.zone_23_csr,
                 zone_23_cert=self.zone_23_cert,
                 ca_cert=SSL.ca_cert,
