@@ -60,7 +60,7 @@ class SSLZone23:
         self.ctmkeytool_em = "/home/em1/ctm_em/bin/ctmkeytool"
         self.zone_23_key = "/home/em1/ctm_em/data/SSL/private_keys/{}.pem".format(self.hostname)
         self.zone_23_csr = "/home/em1/ctm_em/data/SSL/certificate_requests/{}.csr".format(self.hostname)
-        self.zone_23_conf = "/home/em1/ctm_em/data/SSL/config/csr_params_zone_23.cfg"
+        self.zone_23_conf = "/home/em1/ctm_em/data/SSL/config/csr_params_zone_2_3.cfg"
         self.ssl_dir = "/home/em1/ssl"
         self.zone_23_cert = self.ssl_dir + self.hostname + ".cert"
         self.filename = self.hostname + "_zone_2_3"
