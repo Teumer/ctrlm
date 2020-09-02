@@ -63,7 +63,7 @@ class SSLZone23:
 
     def __init__(self, hostname):
         self.hostname = hostname
-        self.ctmkeytool_em = "/home/em1/ctm_em/bin/ctmkeytool"
+        self.ctmkeytool = "/home/s1/ctm_server/scripts/ctmkeytool"
         self.ctmkeytool_filename = self.hostname + "-zone-2-3"
         self.zone_23_key = "/home/em1/ctm_em/data/SSL/private_keys/{}.pem".format(self.ctmkeytool_filename)
         self.zone_23_csr = "/home/em1/ctm_em/data/SSL/certificate_requests/{}.csr".format(self.ctmkeytool_filename)
@@ -82,12 +82,12 @@ class SSLZone23:
 
     def run_create_domain_key_csr(self):
         # Private key file (.pem) and the CSR file (.csr)
-        return "su - em1 -c \"{utility} " \
+        return "su - s1 -c \"{utility} " \
                "-create_csr " \
                "-password {password} " \
                "-conf_file {configuration} " \
                "-out {filename}\"".format(
-                utility=self.ctmkeytool_em,
+                utility=self.ctmkeytool,
                 password=SSL.password,
                 configuration=self.zone_23_conf,
                 filename=self.ctmkeytool_filename
@@ -95,7 +95,7 @@ class SSLZone23:
 
     def run_create_domain_certificate(self):
         # Create domain certificate
-        return "su - em1 -c \"openssl x509 " \
+        return "su - s1 -c \"openssl x509 " \
                "-req " \
                "-in {zone_23_csr} " \
                "-out {zone_23_cert} " \
@@ -117,7 +117,7 @@ class SSLZone23:
 
     def run_create_combined_certificate(self):
         # Combine CA and domain certificates
-        return "su - em1 -c \"cat {zone_23_cert} {ca_cert} > {combined_cert} \"".format(
+        return "su - s1 -c \"cat {zone_23_cert} {ca_cert} > {combined_cert} \"".format(
                 zone_23_cert=self.zone_23_cert,
                 ca_cert=SSL.ca_cert,
                 combined_cert=self.combined_cert
@@ -125,7 +125,7 @@ class SSLZone23:
 
     def run_create_tomcat_keystore(self):
         # Create the p12 keystore file
-        return "su - em1 -c \"openssl pkcs12 " \
+        return "su - s1 -c \"openssl pkcs12 " \
                "-inkey {zone_23_key} " \
                "-in {combined_cert} " \
                "-passin pass:{password} " \
