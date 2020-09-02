@@ -22,7 +22,7 @@ class SSL:
         if os.path.exists(self.ssl_dir):
             shutil.rmtree(self.ssl_dir, ignore_errors=True)
         os.mkdir(self.ssl_dir)
-        os.chmod(self.ssl_dir, 0777)
+        os.chmod(self.ssl_dir, 02777)
 
     def run_create_ca_key(self):
         # Create CA private key with DES in ede cbc mode (168 bit key)
