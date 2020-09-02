@@ -620,26 +620,26 @@ def api_add_server():
 
 def install_ssl_zone_1():
     ssl = SSL()
-    ssl.run_create_ca_key()
-    ssl.run_create_ca_certificate()
+    Command(ssl.run_create_ca_key())
+    Command(ssl.run_create_ca_certificate())
 
     ssl_zone_1 = SSLZone1(hostname)
-    ssl_zone_1.run_create_csr_params()
-    ssl_zone_1.run_create_domain_key_csr()
-    ssl_zone_1.run_create_domain_certificate()
-    ssl_zone_1.run_create_combined_certificate()
-    ssl_zone_1.run_create_tomcat_keystore()
-    ssl_zone_1.run_install_keystore()
+    Command(ssl_zone_1.run_create_csr_params())
+    Command(ssl_zone_1.run_create_domain_key_csr())
+    Command(ssl_zone_1.run_create_domain_certificate())
+    Command(ssl_zone_1.run_create_combined_certificate())
+    Command(ssl_zone_1.run_create_tomcat_keystore())
+    Command(ssl_zone_1.run_install_keystore())
 
     # Tomcat Configuration Manager > SSL Mode > Enable SSL (requires web server recycle)
     Command("su - em1 -c \"manage_webserver -action set_tomcat_conf -sslMode TRUE\"")
 
     ssl_zone_23 = SSLZone23(hostname)
-    ssl_zone_23.run_create_csr_params()
-    ssl_zone_23.run_create_domain_key_csr()
-    ssl_zone_23.run_create_domain_certificate()
-    ssl_zone_23.run_create_combined_certificate()
-    ssl_zone_23.run_create_tomcat_keystore()
+    Command(ssl_zone_23.run_create_csr_params())
+    Command(ssl_zone_23.run_create_domain_key_csr())
+    Command(ssl_zone_23.run_create_domain_certificate())
+    Command(ssl_zone_23.run_create_combined_certificate())
+    Command(ssl_zone_23.run_create_tomcat_keystore())
 
 
 if __name__ == '__main__':
