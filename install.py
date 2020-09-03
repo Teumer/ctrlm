@@ -6,6 +6,7 @@ import os
 import re
 import subprocess
 import sys
+from ssl import SSL, SSLZone1, SSLZone23
 
 __author__ = "joe_teumer@bmc.com"
 
@@ -13,9 +14,6 @@ __author__ = "joe_teumer@bmc.com"
 Todo
 - add order test job via API call
 - add MOTD
-- add SSL Zone 1
-- add SSL Zone 2
-- add SSL Zone 3
 """
 
 # NFS share with Control-M installation files
@@ -560,7 +558,7 @@ def api_get_port():
     HTTP_PORT=[18080],HTTPS_PORT=[8446],SHUTDOWN_PORT=[8006],AJP_PORT=[NA]
     """
     port_data = Command("su - em1 -c \"manage_webserver -action get_ports\"")
-    port = re.search(r"HTTPS_PORT=\[(?P<port>\d+)\]", str(port_data.stdout))
+    port = re.search(r"HTTPS_PORT=\[(?P<port>\d+)]", str(port_data.stdout))
     if port:
         return port.group('port')
     else:
@@ -617,6 +615,36 @@ def api_add_server():
                                                                               id="001"))
 
 
+def install_ssl_zones():
+    ssl = SSL()
+    Command(ssl.run_create_ca_key())
+    Command(ssl.run_create_ca_certificate())
+
+    ssl_zone_1 = SSLZone1(hostname)
+    Command(ssl_zone_1.run_create_csr_params())
+    Command(ssl_zone_1.run_create_domain_key_csr())
+    Command(ssl_zone_1.run_create_domain_certificate())
+    Command(ssl_zone_1.run_create_combined_certificate())
+    Command(ssl_zone_1.run_create_tomcat_keystore())
+    ssl_zone_1.run_install_keystore()
+
+    # Tomcat Configuration Manager > SSL Mode > Enable SSL (requires web server recycle)
+    Command("su - em1 -c \"manage_webserver -action set_tomcat_conf -sslMode TRUE\"")
+
+    # Manuals steps > Follow Control-M SSL Guide to configure SSL system parameters and recycle components
+    ssl_zone_23 = SSLZone23(hostname)
+    ssl.run_open_file_permissions()
+    Command(ssl_zone_23.run_create_csr_params())
+    Command(ssl_zone_23.run_create_domain_key_csr())
+    Command(ssl_zone_23.run_create_domain_certificate())
+    Command(ssl_zone_23.run_create_combined_certificate())
+    Command(ssl_zone_23.run_create_tomcat_keystore())
+    ssl.run_open_file_permissions()
+    Command(ssl_zone_23.run_install_enterprise_manager())
+    Command(ssl_zone_23.run_install_server())
+    Command(ssl_zone_23.run_install_agent())
+
+
 if __name__ == '__main__':
 
     # Create root logger
@@ -637,6 +665,8 @@ if __name__ == '__main__':
     from argparse import ArgumentParser
 
     parser = ArgumentParser()
+    parser.add_argument("-ssl", "--setup-ssl", action='store_true',
+                        help="setup SSL Zones 1 2 3")
     parser.add_argument("-s", "--skip-install", action='store_true',
                         help="dev testing only - skip Control-M installation")
     args = parser.parse_args()
@@ -654,6 +684,24 @@ if __name__ == '__main__':
     # Get hostname
     hostname = Command('hostname').stdout
 
+    # SSL
+    if args.setup_ssl:
+        install_ssl_zones()
+        exit(0)
+
+    # Download package to mount
+    repo_mount()
+    repo_copy()
+    repo_extract()
+
+    # Exit here if skip install - download only
+    if args.skip_install:
+        exit(0)
+
+    #####################
+    # CTM installation  #
+    #####################
+
     # Housekeeping
     set_add_user()
     set_user_password()
@@ -669,38 +717,36 @@ if __name__ == '__main__':
     set_auto_script_reload()
     set_auto_script_enable()
 
-    # Download package to mount
-    repo_mount()
-    repo_copy()
-    repo_extract()
+    # Core
+    install_ctm_enterprise_manager()
+    install_ctm_server()
 
-    # CTM installation
-    if not args.skip_install:
-        install_ctm_enterprise_manager()
-        install_ctm_server()
-        install_forecast()
-        install_bim()
-        install_self_service()
-        install_workload_change_manager()
-        install_wjm_enterprise_manager()
-        install_wjm_agent()
-        install_wjm_agent_patch()
-        install_advanced_file_transfer()
-        install_managed_file_transfer()
-        install_epel_repository()
-        install_htop()
+    # Add-Ons
+    install_forecast()
+    install_bim()
+    install_self_service()
+    install_workload_change_manager()
+    install_wjm_enterprise_manager()
+    install_wjm_agent()
+    install_wjm_agent_patch()
+    install_advanced_file_transfer()
+    install_managed_file_transfer()
 
-        # API
-        api_add_environment()
-        api_login()
-        api_add_server()
-        api_install_application_pack()
+    # EPEL repository
+    install_epel_repository()
+    install_htop()
 
-        # Start Control-M/Agent
-        start_agent_process()
+    # API
+    api_add_environment()
+    api_login()
+    api_add_server()
+    api_install_application_pack()
 
-        # CSH Profile Fix
-        set_cshrc_profile()
-        set_shell_alias()
+    # Start Control-M/Agent
+    start_agent_process()
 
-        logging.info("Control-M v{} installed successfully".format(version_dict[version]['version']))
+    # CSH Profile Fix
+    set_cshrc_profile()
+    set_shell_alias()
+
+    logging.info("Control-M v{} installed successfully".format(version_dict[version]['version']))

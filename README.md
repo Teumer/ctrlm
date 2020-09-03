@@ -60,8 +60,40 @@ Select one of the following versions:
 usage: install.py [-h] [-s]
 
 optional arguments:
-  -h, --help          show this help message and exit
-  -s, --skip-install  skip Control-M installation, download packages only
+  -h    -> help          show this help message and exit
+  -s    -> skip Control-M installation, download packages only
+  -ssl  -> setup SSL Zone 1, 2, 3
+```
+
+##### SSL Deployment Process
+
+```
+# Execute script after installation with ssl argument
+python install.py -ssl
+
+# Follow the instructions below
+```
+
+```
+Zone 1 - Control-M/Enterprise Manager Web Server
+
+1. Copy the following keystore from the VM to your laptop / computer with desktop client installed
+    - /auto_ssl/hostname-keystore-zone-1.p12
+2. Right click on the .p12
+    - Select Install PFX
+    - Select Default Options
+    - Enter Password 'changeit'
+3. Recycle the web server
+4. Control-M Web and Desktop Client are ready for use with SSL
+```
+
+```
+Zone 2 - Control-M/Enterprise Manager and Control-M/Server
+Zone 3 - Control-M/Server and Control-M/Agent
+
+1. The script deploys SSL to each component, however, manual steps are required to enable SSL mode
+2. Review the document: Enabling SSL in zone 2 and 3
+https://documents.bmc.com/supportu/9.0.20/help/Main_help/en-US/index.htm#98211.htm
 ```
 
 ## Output
