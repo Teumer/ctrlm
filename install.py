@@ -11,7 +11,6 @@ __author__ = "joe_teumer@bmc.com"
 
 """
 Todo
-- add order test job via API call
 - add MOTD
 """
 
@@ -201,7 +200,7 @@ class Command:
             if realtime_output == '' and p.poll() is not None:
                 break
             sys.stdout.write(realtime_output)
-        return p.stdout, p.returncode
+        return p.communicate()[0].strip().rstrip(), p.returncode
 
     def run_command(self, cmd):
         logging.info(self.command)
