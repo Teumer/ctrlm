@@ -7,6 +7,7 @@ import re
 import shutil
 import subprocess
 import sys
+from time import sleep
 
 __author__ = "joe_teumer@bmc.com"
 
@@ -391,6 +392,7 @@ def install_htop():
 
 def api_install_application_pack():
     # Install Control-M/Agent Application Pack
+    # Control-M/Agent must be started
     start_agent_process()
     Command("su - em1 -c \"ctm provision upgrade::install {server} {agent} AppPack {version}\"".format(
         server="Server1",
@@ -616,9 +618,10 @@ def api_add_server():
     """
     if api_server_already_added():
         return
-    Command("su - em1 -c \"ctm config server::add {host} {ctm} {id}\"".format(host=hostname,
-                                                                              ctm="Server1",
-                                                                              id="001"))
+    # Sleep after running command to allow for changes to take effect or following commands will fail
+    Command("su - em1 -c \"ctm config server::add {host} {ctm} {id}\" && sleep 30".format(host=hostname,
+                                                                                          ctm="Server1",
+                                                                                          id="001"))
 
 
 def install_ssl_zones():
