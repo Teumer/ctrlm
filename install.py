@@ -17,6 +17,9 @@ Todo
 
 # Log directory and log filename
 file_path = "/tmp/control-m/"
+if os.path.exists(file_path):
+    shutil.rmtree(file_path, ignore_errors=True)
+os.mkdir(file_path)
 log_filename = "{}.log".format(os.path.basename(__file__))
 
 # Control-M installation information
@@ -297,9 +300,6 @@ def set_auto_script_enable():
 
 def install_copy():
     # Copy ctm installation files to working directory
-    if os.path.exists(file_path):
-        shutil.rmtree(file_path, ignore_errors=True)
-    os.mkdir(file_path)
     Command("rsync -avP {}* {}".format(path, file_path))
 
 
