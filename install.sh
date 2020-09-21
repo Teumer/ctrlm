@@ -5,8 +5,8 @@
 
 DIRECTORY='ctrlm'
 
-if [ "$EUID" -ne 0 ]
-  then echo "Please run as root"
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Please run as root"
   exit
 fi
 
@@ -21,7 +21,6 @@ if [ -d "$DIRECTORY" ]; then
 fi
 
 # Clone repository
-#git -c http.sslVerify=false clone https://github.com/Teumer/ctrlm.git
 git clone https://github.com/Teumer/ctrlm.git
 
 cd "$DIRECTORY"
