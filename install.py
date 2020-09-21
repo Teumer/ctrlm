@@ -7,7 +7,6 @@ import re
 import shutil
 import subprocess
 import sys
-from time import sleep
 
 __author__ = "joe_teumer@bmc.com"
 
