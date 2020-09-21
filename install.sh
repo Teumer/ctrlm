@@ -18,7 +18,8 @@ if [ -d "$DIRECTORY" ]; then
 fi
 
 # Clone repository
-git -c http.sslVerify=false clone https://github.com/Teumer/ctrlm.git
+#git -c http.sslVerify=false clone https://github.com/Teumer/ctrlm.git
+git clone https://github.com/Teumer/ctrlm.git
 
 cd "$DIRECTORY"
 
