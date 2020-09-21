@@ -390,10 +390,18 @@ def install_htop():
     Command("yum install htop -y")
 
 
+def ctm_get_cm():
+    # Force Control-M/Server to interrogate Control-M/Agent for version
+    Command("su - s1 -c\"ctmgetcm -HOST {} -APPLTYPE OS -ACTION get\"".format(hostname))
+
+
 def api_install_application_pack():
     # Install Control-M/Agent Application Pack
     # Control-M/Agent must be started
     start_agent_process()
+    # Update
+    ctm_get_cm()
+    # Issue deployment command
     Command("su - em1 -c \"ctm provision upgrade::install {server} {agent} AppPack {version}\"".format(
         server="Server1",
         agent=hostname,
@@ -641,8 +649,7 @@ def api_add_server():
     """
     if api_server_already_added():
         return
-    # Sleep after running command to allow for changes to take effect or following commands will fail
-    Command("su - em1 -c \"ctm config server::add {host} {ctm} {id}\" && sleep 30".format(host=hostname,
+    Command("su - em1 -c \"ctm config server::add {host} {ctm} {id}\"".format(host=hostname,
                                                                                           ctm="Server1",
                                                                                           id="001"))
 
@@ -786,14 +793,17 @@ if __name__ == '__main__':
     api_add_environment()
     api_login()
     api_add_server()
-    api_install_application_pack()
 
     # CSH Profile Fix
     set_cshrc_profile()
     set_shell_alias()
 
     # Recycle the Control-M/Enterprise Manager web server
+    # Required for CTM 3719 Fix
     recycle_enterprise_manager_web_server()
+
+    # Install Application Pack on Control-M/Agent
+    api_install_application_pack()
 
     # Fin
     issue_script_summary()
