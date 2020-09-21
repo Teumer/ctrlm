@@ -392,7 +392,7 @@ def install_htop():
 
 def ctm_get_cm():
     # Force Control-M/Server to interrogate Control-M/Agent for version
-    Command("su - s1 -c\"ctmgetcm -HOST {} -APPLTYPE OS -ACTION get\"".format(hostname))
+    Command("su - s1 -c \"ctmgetcm -HOST {} -APPLTYPE OS -ACTION get\"".format(hostname))
 
 
 def api_install_application_pack():
