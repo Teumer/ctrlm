@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import re
+import shutil
 import subprocess
 import sys
 
@@ -296,6 +297,9 @@ def set_auto_script_enable():
 
 def install_copy():
     # Copy ctm installation files to working directory
+    if os.path.exists(file_path):
+        shutil.rmtree(file_path, ignore_errors=True)
+    os.mkdir(file_path)
     Command("rsync -avP {}* {}".format(path, file_path))
 
 
