@@ -194,7 +194,7 @@ class Command:
 
     def run_command_realtime(self, cmd):
         logging.info(self.command)
-        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding='UTF-8')
+        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding='utf-8')
         # for line in iter(p.stdout.readline, b''):
             # sys.stdout.write(line.rstrip())
             # sys.stdout.write(line)
