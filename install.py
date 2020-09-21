@@ -582,17 +582,11 @@ def start_enterprise_manager_web_server():
     Command("su - em1 -c \"start_web_server\"")
 
 
-def status_enterprise_manager_web_server():
-    # Status of the Control-M/Enterprise Manager web server
-    Command("su - em1 -c \"emweb_status\"")
-
-
 def recycle_enterprise_manager_web_server():
     # Recycle the Control-M/Enterprise Manager web server
     stop_enterprise_manager_web_server()
     sleep(30)
     start_enterprise_manager_web_server()
-    status_enterprise_manager_web_server()
 
 
 def api_get_port():
