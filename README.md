@@ -17,26 +17,25 @@ Automated download and deployment of the following Control-M components:
 
 
 ## Input / Requirements
-1. Red Hat 7 virtual machine
-   - hosted on BMC Cloud Lifecycle Management
-   - clean state - no Control-M software previously installed
+1. Virtual machine
+   - Hosted on BMC Cloud Lifecycle Management
+   - Clean state - no Control-M software previously installed
+   - Red Hat / CentOS 7
+   - Red Hat / CentOS 8
 2. Login as root user
 
 
 ## Process
+Copy and paste either command into a terminal
+
+Install via curl
 ```
-# Clone the repository
-git clone https://github.com/Teumer/ctrlm.git
+sh -c "$(curl -fsSL https://raw.github.com/Teumer/ctrlm/master/install.sh)"
 ```
 
+Install via wget
 ```
-# Navigate to the directory
-cd ctrlm
-```
-
-```
-# Execute script
-python install.py
+sh -c "$(wget https://raw.github.com/Teumer/ctrlm/master/install.sh -O -)"
 ```
 
 ```
@@ -68,15 +67,14 @@ optional arguments:
 ##### SSL Deployment Process
 
 ```
-# Execute script after installation with ssl argument
+# First, execute script with ssl argument
 python install.py -ssl
 
-# Follow the instructions below
+# Finally, follow the instructions below for each zone
 ```
 
-```
 Zone 1 - Control-M/Enterprise Manager Web Server
-
+```
 1. Copy the following keystore from the VM to your laptop / computer with desktop client installed
     - /auto_ssl/hostname-keystore-zone-1.p12
 2. Right click on the .p12
@@ -87,10 +85,9 @@ Zone 1 - Control-M/Enterprise Manager Web Server
 4. Control-M Web and Desktop Client are ready for use with SSL
 ```
 
-```
 Zone 2 - Control-M/Enterprise Manager and Control-M/Server
 Zone 3 - Control-M/Server and Control-M/Agent
-
+```
 1. The script deploys SSL to each component, however, manual steps are required to enable SSL mode
 2. Review the document: Enabling SSL in zone 2 and 3
 https://documents.bmc.com/supportu/9.0.20/help/Main_help/en-US/index.htm#98211.htm
