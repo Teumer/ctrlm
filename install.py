@@ -654,7 +654,7 @@ def issue_script_summary():
     string = "To get started use a web browser and download the Control-M client: \n" \
              "{} \n" \
              "{}".format(http, https)
-    Command("echo {}".format(string))
+    Command("echo \"{}\"".format(string))
 
 
 def install_ssl_zones():
