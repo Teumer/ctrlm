@@ -569,11 +569,17 @@ def start_enterprise_manager_web_server():
     Command("su - em1 -c \"start_web_server\"")
 
 
+def status_enterprise_manager_web_server():
+    # Status of the Control-M/Enterprise Manager web server
+    Command("su - em1 -c \"emweb_status\"")
+
+
 def recycle_enterprise_manager_web_server():
     # Recycle the Control-M/Enterprise Manager web server
     stop_enterprise_manager_web_server()
     sleep(30)
     start_enterprise_manager_web_server()
+    status_enterprise_manager_web_server()
 
 
 def api_get_port():
@@ -639,6 +645,16 @@ def api_add_server():
     Command("su - em1 -c \"ctm config server::add {host} {ctm} {id}\" && sleep 30".format(host=hostname,
                                                                                           ctm="Server1",
                                                                                           id="001"))
+
+
+def issue_script_summary():
+    # Connection information
+    http = "http://{}:18080/Welcome".format(hostname)
+    https = "https://{}:{}/Welcome".format(hostname, api_get_port())
+    string = "To get started use a web browser and download the Control-M client: \n" \
+             "{} \n" \
+             "{}".format(http, https)
+    Command("echo {}".format(string))
 
 
 def install_ssl_zones():
@@ -778,5 +794,8 @@ if __name__ == '__main__':
 
     # Recycle the Control-M/Enterprise Manager web server
     recycle_enterprise_manager_web_server()
+
+    # Fin
+    issue_script_summary()
 
     logging.info("Control-M v{} installed successfully".format(version_dict[version]['version']))
