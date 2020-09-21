@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# sh -c "$(curl -fsSL https://raw.githubusercontent.com/Teumer/ctrlm/master/install.sh)
+# sh -c "$(wget https://raw.githubusercontent.com/Teumer/ctrlm/master/install.sh -O -)"
+
 DIRECTORY='ctrlm'
 
 if [ "$EUID" -ne 0 ]
@@ -8,7 +11,7 @@ if [ "$EUID" -ne 0 ]
 fi
 
 # Check if python3 is installed
-if not python3 -V; then
+if ! python3 -V; then
   yum install python3 -y
 fi
 
