@@ -397,12 +397,15 @@ def ctm_get_cm():
 
 def api_install_application_pack():
     # Install Control-M/Agent Application Pack
+    # Sleep command needed for Control-M/Server to catch up
     # Control-M/Agent must be started
     start_agent_process()
-    # Update
+    # 2 minutes
+    sleep(120)
+    # Update Control-M/Agent version
     ctm_get_cm()
-    # Wait for Control-M/Server to catch up - not ideal
-    sleep(60)
+    # 5 minutes
+    sleep(300)
     # Issue deployment command
     Command("su - em1 -c \"ctm provision upgrade::install {server} {agent} AppPack {version}\"".format(
         server="Server1",
