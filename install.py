@@ -15,7 +15,7 @@ Todo
 """
 
 # Log directory and log filename
-file_path = "/tmp/"
+file_path = "/tmp/control-m/"
 log_filename = "{}.log".format(os.path.basename(__file__))
 
 # Control-M installation information
@@ -205,7 +205,7 @@ class Command:
     def run_command(self, cmd):
         logging.info(self.command)
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        return p.communicate()[0].strip().rstrip(), p.returncode
+        return p.communicate()[0].strip().rstrip().decode('utf-8'), p.returncode
 
 
 def set_cshrc_profile():
