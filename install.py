@@ -6,7 +6,6 @@ import os
 import re
 import subprocess
 import sys
-from ssl import SSL, SSLZone1, SSLZone23
 
 __author__ = "joe_teumer@bmc.com"
 
@@ -194,11 +193,13 @@ class Command:
     def run_command_realtime(self, cmd):
         logging.info(self.command)
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        for line in iter(p.stdout.readline, b''):
+        # for line in iter(p.stdout.readline, b''):
             # sys.stdout.write(line.rstrip())
-            sys.stdout.write(line)
-            sys.stdout.flush()
-        return p.communicate()[0].strip().rstrip(), p.returncode
+            # sys.stdout.write(line)
+            # sys.stdout.flush()
+        # return p.communicate()[0].strip().rstrip(), p.returncode
+        while True:
+            realtime_output = p.stdout.readline()
 
     def run_command(self, cmd):
         logging.info(self.command)
@@ -616,6 +617,7 @@ def api_add_server():
 
 
 def install_ssl_zones():
+    from ssl import SSL, SSLZone1, SSLZone23
     ssl = SSL()
     Command(ssl.run_create_ca_key())
     Command(ssl.run_create_ca_certificate())
