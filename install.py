@@ -1,27 +1,26 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 import base64
 import json
 import logging
 import os
 import re
+import shutil
 import subprocess
 import sys
-from ssl import SSL, SSLZone1, SSLZone23
+from time import sleep
 
 __author__ = "joe_teumer@bmc.com"
 
 """
 Todo
-- add order test job via API call
 - add MOTD
 """
 
-# NFS share with Control-M installation files
-repo_host = base64.b64decode('Y2xtLWF1cy10dmwzcnQ=')
-repo_host_dir = "/nfs/repo"
-
 # Log directory and log filename
-file_path = "/tmp/"
+file_path = "/tmp/control-m/"
+if os.path.exists(file_path):
+    shutil.rmtree(file_path, ignore_errors=True)
+os.mkdir(file_path)
 log_filename = "{}.log".format(os.path.basename(__file__))
 
 # Control-M installation information
@@ -107,7 +106,7 @@ class InstallationMenu:
                 sys.stdout.write(self.menu())
                 sys.stdout.flush()
                 # Get user input
-                value = int(raw_input(""))
+                value = int(input(""))
                 if value == 0:
                     sys.exit(0)
                 # Check if user input is valid
@@ -193,17 +192,18 @@ class Command:
 
     def run_command_realtime(self, cmd):
         logging.info(self.command)
-        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        for line in iter(p.stdout.readline, b''):
-            # sys.stdout.write(line.rstrip())
-            sys.stdout.write(line)
-            sys.stdout.flush()
+        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding='utf-8')
+        while True:
+            realtime_output = p.stdout.readline()
+            if realtime_output == '' and p.poll() is not None:
+                break
+            sys.stdout.write(realtime_output)
         return p.communicate()[0].strip().rstrip(), p.returncode
 
     def run_command(self, cmd):
         logging.info(self.command)
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        return p.communicate()[0].strip().rstrip(), p.returncode
+        return p.communicate()[0].strip().rstrip().decode('utf-8'), p.returncode
 
 
 def set_cshrc_profile():
@@ -339,7 +339,7 @@ def repo_mount():
     # Unmount /mnt if mounted
     Command("if grep -qs '/mnt ' /proc/mounts; then umount /mnt; fi")
     # Mount remote repository
-    Command("mount {}:{} /mnt/".format(repo_host, repo_host_dir))
+    Command("mount {}:{} /mnt/".format(base64.b64decode('Y2xtLWF1cy10dmwzcnQ=').decode('utf-8'), '/nfs/repo'))
 
 
 def repo_copy():
@@ -373,6 +373,13 @@ def install_ctm_server():
     ), realtime=True, critical=False)
 
 
+def install_ctm_3719():
+    # KA 000365525 Fix download defect
+    # Insert 'allow-downloads' after sandbox before allow-scripts if missing
+    Command("sed -i 's/sandbox allow-scripts/sandbox allow-downloads allow-scripts/' "
+            "/home/em1/ctm_em/etc/emweb/tomcat/conf/web.xml")
+
+
 def install_epel_repository():
     # Install the epel repository for RHEL 7
     Command("rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm")
@@ -383,9 +390,23 @@ def install_htop():
     Command("yum install htop -y")
 
 
+def ctm_get_cm():
+    # Force Control-M/Server to interrogate Control-M/Agent for version
+    Command("su - s1 -c \"ctmgetcm -HOST {} -APPLTYPE OS -ACTION get\"".format(hostname))
+
+
 def api_install_application_pack():
     # Install Control-M/Agent Application Pack
+    # Sleep command needed for Control-M/Server to catch up
+    # Control-M/Agent must be started
     start_agent_process()
+    # 2 minutes
+    sleep(120)
+    # Update Control-M/Agent version
+    ctm_get_cm()
+    # 5 minutes
+    sleep(300)
+    # Issue deployment command
     Command("su - em1 -c \"ctm provision upgrade::install {server} {agent} AppPack {version}\"".format(
         server="Server1",
         agent=hostname,
@@ -551,6 +572,23 @@ def stop_agent_process():
     Command("su - s1 -c \"shut-ag -u s1 -p ALL -s\"")
 
 
+def stop_enterprise_manager_web_server():
+    # Stop the Control-M/Enterprise Manager web server
+    Command("su - em1 -c \"stop_web_server\"")
+
+
+def start_enterprise_manager_web_server():
+    # Start the Control-M/Enterprise Manager web server
+    Command("su - em1 -c \"start_web_server\"")
+
+
+def recycle_enterprise_manager_web_server():
+    # Recycle the Control-M/Enterprise Manager web server
+    stop_enterprise_manager_web_server()
+    sleep(30)
+    start_enterprise_manager_web_server()
+
+
 def api_get_port():
     """
     Get the port used for API calls
@@ -611,11 +649,22 @@ def api_add_server():
     if api_server_already_added():
         return
     Command("su - em1 -c \"ctm config server::add {host} {ctm} {id}\"".format(host=hostname,
-                                                                              ctm="Server1",
-                                                                              id="001"))
+                                                                                          ctm="Server1",
+                                                                                          id="001"))
+
+
+def issue_script_summary():
+    # Connection information
+    http = "http://{}:18080/Welcome".format(hostname)
+    https = "https://{}:{}/Welcome".format(hostname, api_get_port())
+    string = "To get started use a web browser and download the Control-M client: \n" \
+             "{} \n" \
+             "{}".format(http, https)
+    Command("echo \"{}\"".format(string))
 
 
 def install_ssl_zones():
+    from ssl import SSL, SSLZone1, SSLZone23
     ssl = SSL()
     Command(ssl.run_create_ca_key())
     Command(ssl.run_create_ca_certificate())
@@ -721,6 +770,9 @@ if __name__ == '__main__':
     install_ctm_enterprise_manager()
     install_ctm_server()
 
+    # Core - CAR FIX
+    install_ctm_3719()
+
     # Add-Ons
     install_forecast()
     install_bim()
@@ -740,13 +792,19 @@ if __name__ == '__main__':
     api_add_environment()
     api_login()
     api_add_server()
-    api_install_application_pack()
-
-    # Start Control-M/Agent
-    start_agent_process()
 
     # CSH Profile Fix
     set_cshrc_profile()
     set_shell_alias()
+
+    # Recycle the Control-M/Enterprise Manager web server
+    # Required for CTM 3719 Fix
+    recycle_enterprise_manager_web_server()
+
+    # Install Application Pack on Control-M/Agent
+    api_install_application_pack()
+
+    # Fin
+    issue_script_summary()
 
     logging.info("Control-M v{} installed successfully".format(version_dict[version]['version']))

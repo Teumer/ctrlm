@@ -42,14 +42,14 @@ class SSL:
         # Create SSL working directory
         if os.path.exists(self.ssl_dir):
             shutil.rmtree(self.ssl_dir, ignore_errors=True)
-        os.mkdir(self.ssl_dir)
-        os.chmod(self.ssl_dir, 0777)
+        os.mkdir(self.ssl_dir, mode=0o777)
+        os.chmod(self.ssl_dir, mode=0o777)
 
     def run_open_file_permissions(self):
         # Open file permissions on SSL files
         for root, dirs, files in os.walk(self.ssl_dir):
             for f in files:
-                os.chmod(os.path.join(root, f), 0777)
+                os.chmod(os.path.join(root, f), mode=0o777)
 
     def run_create_ca_key(self):
         # Create CA private key with DES in ede cbc mode (168 bit key)
@@ -104,7 +104,7 @@ class SSLZone1:
 
     def run_create_domain_key_csr(self):
         # Private key file (.pem) and the CSR file (.csr)
-        return "su - em1 -c \"{utility} " \
+        return "su - em1 -c \"em {utility} " \
                "-create_csr " \
                "-password {password} " \
                "-conf_file {configuration} " \
@@ -199,7 +199,7 @@ class SSLZone23:
 
     def run_create_domain_key_csr(self):
         # Private key file (.pem) and the CSR file (.csr)
-        return "su - em1 -c \"{utility} " \
+        return "su - em1 -c \"em {utility} " \
                "-create_csr " \
                "-password {password} " \
                "-conf_file {configuration} " \
@@ -260,7 +260,7 @@ class SSLZone23:
 
     def run_install_enterprise_manager(self):
         # Deploy SSL on Control-M/Enterprise Manager
-        return "su - em1 -c \"{utility} " \
+        return "su - em1 -c \"em {utility} " \
                "-silent " \
                "-keystore {keystore} " \
                "-password {password} " \
