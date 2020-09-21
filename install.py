@@ -401,6 +401,8 @@ def api_install_application_pack():
     start_agent_process()
     # Update
     ctm_get_cm()
+    # Wait for Control-M/Server to catch up - not ideal
+    sleep(60)
     # Issue deployment command
     Command("su - em1 -c \"ctm provision upgrade::install {server} {agent} AppPack {version}\"".format(
         server="Server1",
