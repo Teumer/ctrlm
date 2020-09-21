@@ -15,10 +15,6 @@ Todo
 - add MOTD
 """
 
-# NFS share with Control-M installation files
-repo_host = base64.b64decode('Y2xtLWF1cy10dmwzcnQ=')
-repo_host_dir = "/nfs/repo"
-
 # Log directory and log filename
 file_path = "/tmp/"
 log_filename = "{}.log".format(os.path.basename(__file__))
@@ -346,7 +342,7 @@ def repo_mount():
     # Unmount /mnt if mounted
     Command("if grep -qs '/mnt ' /proc/mounts; then umount /mnt; fi")
     # Mount remote repository
-    Command("mount {}:{} /mnt/".format(repo_host, repo_host_dir))
+    Command("mount {}:{} /mnt/".format(base64.b64decode('Y2xtLWF1cy10dmwzcnQ=').decode('utf-8'), '/nfs/repo'))
 
 
 def repo_copy():
