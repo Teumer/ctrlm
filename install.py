@@ -7,6 +7,7 @@ import re
 import shutil
 import subprocess
 import sys
+from time import sleep
 
 __author__ = "joe_teumer@bmc.com"
 
@@ -558,6 +559,23 @@ def stop_agent_process():
     Command("su - s1 -c \"shut-ag -u s1 -p ALL -s\"")
 
 
+def stop_enterprise_manager_web_server():
+    # Stop the Control-M/Enterprise Manager web server
+    Command("su - em1 -c \"stop_web_server\"")
+
+
+def start_enterprise_manager_web_server():
+    # Start the Control-M/Enterprise Manager web server
+    Command("su - em1 -c \"start_web_server\"")
+
+
+def recycle_enterprise_manager_web_server():
+    # Recycle the Control-M/Enterprise Manager web server
+    stop_enterprise_manager_web_server()
+    sleep(30)
+    start_enterprise_manager_web_server()
+
+
 def api_get_port():
     """
     Get the port used for API calls
@@ -757,5 +775,8 @@ if __name__ == '__main__':
     # CSH Profile Fix
     set_cshrc_profile()
     set_shell_alias()
+
+    # Recycle the Control-M/Enterprise Manager web server
+    recycle_enterprise_manager_web_server()
 
     logging.info("Control-M v{} installed successfully".format(version_dict[version]['version']))
