@@ -42,7 +42,7 @@ class SSL:
         # Create SSL working directory
         if os.path.exists(self.ssl_dir):
             shutil.rmtree(self.ssl_dir, ignore_errors=True)
-        os.mkdir(self.ssl_dir)
+        os.mkdir(self.ssl_dir, mode=0o777)
         # todo debug
         # os.chmod(self.ssl_dir, 0777)
 
