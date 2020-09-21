@@ -372,6 +372,13 @@ def install_ctm_server():
     ), realtime=True, critical=False)
 
 
+def install_ctm_3719():
+    # KA 000365525 Fix download defect
+    # Insert 'allow-downloads' after sandbox before allow-scripts if missing
+    Command("sed -i 's/sandbox allow-scripts/sandbox allow-downloads allow-scripts/' "
+            "/home/em1/ctm_em/etc/emweb/tomcat/conf/web.xml")
+
+
 def install_epel_repository():
     # Install the epel repository for RHEL 7
     Command("rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm")
@@ -720,6 +727,9 @@ if __name__ == '__main__':
     # Core
     install_ctm_enterprise_manager()
     install_ctm_server()
+
+    # Core - CAR FIX
+    install_ctm_3719()
 
     # Add-Ons
     install_forecast()
