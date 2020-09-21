@@ -752,9 +752,6 @@ if __name__ == '__main__':
     api_add_server()
     api_install_application_pack()
 
-    # Start Control-M/Agent
-    start_agent_process()
-
     # CSH Profile Fix
     set_cshrc_profile()
     set_shell_alias()
