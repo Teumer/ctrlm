@@ -202,6 +202,8 @@ class Command:
         # return p.communicate()[0].strip().rstrip(), p.returncode
         while True:
             realtime_output = p.stdout.readline()
+            if realtime_output == '' and p.poll() is not None:
+                break
             sys.stdout.write(realtime_output)
 
     def run_command(self, cmd):
