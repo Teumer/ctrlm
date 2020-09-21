@@ -105,8 +105,6 @@ class InstallationMenu:
                 sys.stdout.write(self.menu())
                 sys.stdout.flush()
                 # Get user input
-                # todo debug
-                # value = int(raw_input(""))
                 value = int(input(""))
                 if value == 0:
                     sys.exit(0)
